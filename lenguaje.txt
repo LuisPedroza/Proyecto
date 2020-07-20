@@ -1,0 +1,46 @@
+function f(number a, number b): number {       ' toda función regresa algo
+   number c = a + b;
+   return c + a ^ 2;
+}
+
+function g( ): number {
+   array a = [ 1, 2, 3, 4 ];
+   return a(0) + a(1) + a(2) + a(3);   ' acceso a elementos individuales con ( )  
+}
+
+function h( ): array {
+   array a = [ 1, 2 ] * [ 3, 4 ];      ' producto de arreglos es la concatenación
+   return a;
+}
+
+function i( ): number {
+   array a = [ 8, 8, 9, 9 ];
+   array b = a[0];                     ' extraer subarreglo, equivalente a     array b = [ a(0) ]
+   array c = a[0..2];                  ' extraer subarreglo, equivalente a     array c = [ a(0), a(1), a(2) ]
+   return c(0);
+}
+
+function main(number n): number {      ' la entrada son los parámetros de main, se lee automaticamente (un arreglo se lee como literal [ cosas, cosas ]
+   if n = 1 {                          ' como el lenguaje es funcional (no se puede modificar una variable después de asignarla) podemos usar = aquí
+      return f(n, 5) + g( );           ' se imprime automáticamente lo que main regresa
+   } else if n = 2 {
+      return 8.567;
+   } else {
+      return h( ) + i( );
+   }
+   
+   array a = [ ];
+   if #a = 0 {
+      
+   }
+}      
+
+"
+   no hay matrices, sólo arreglos de números
+   operadores:
+      + - * / ^ % //         (% es el residuo de la división, // es el piso de la división, ^ es la potencia)
+      #                      (tamaño del arreglo)
+      = != < <= > >=         (relacionales)
+      & | !                  (and, or, not)
+      ..                     (se usa para obtener el slice de un arreglo)
+"
