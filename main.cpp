@@ -1,23 +1,12 @@
-#include "vector.h"
+#include "lib/archivo.h"
+#include "lib/lexer.h"
+#include "lib/vector.h"
 #include <iostream>
-#include <fstream>
 
-void lee_archivo(concurrent_vector<char>& v, std::ifstream& ifs){
-   int tam = 4096;
-   std::vector<char> pagina(tam);
-   while (ifs) {
-      ifs.read(pagina.data(), tam);
-      int leidos = ifs.gcount();
-      if(leidos == 0){
-         break;
-      }else{
-         v.append(pagina.begin(), pagina.begin() + leidos);
-      }
-   }
-   v.push_back('\0');
-}
+using char_iterator = concurrent_vector<char>::const_iterator;
 
 int main(int argc, char *argv[]) {
+
    if (argc < 2) {
       std::cerr << "Archivo de entrada no especificado." << '\n';
       return 0;
@@ -32,10 +21,10 @@ int main(int argc, char *argv[]) {
 
    concurrent_vector<char> archivo;
    lee_archivo(archivo, entrada);
-   
-   for(char c : archivo){
-      std::cout << c;
-   }
+
+   concurrent_vector<token_anotada<char_iterator>> tokens;
+   lexer(tokens, archivo.cbegin());
+      
    std::cout << '\n';
 
 }
