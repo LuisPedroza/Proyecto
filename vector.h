@@ -10,6 +10,10 @@ template<typename T>
 class concurrent_vector : private tbb::concurrent_vector<T> {
    std::atomic<std::size_t> tam;
 public:
+   using value_type = T;
+   using iterator = tbb::concurrent_vector<T>::iterator;
+   using const_iterator = tbb::concurrent_vector<T>::const_iterator;
+
    concurrent_vector( )
    : tam(tbb::concurrent_vector<T>::size( )) {
    }
@@ -82,27 +86,27 @@ public:
       return *std::prev(end( ));
    }
 
-   auto begin( ) {
+   iterator begin( ) {
       return tbb::concurrent_vector<T>::begin( );
    }
 
-   auto end( ) {
+   iterator end( ) {
       return tbb::concurrent_vector<T>::begin( ) + size( );
    }
 
-   auto begin( ) const {
+   const_iterator begin( ) const {
       return tbb::concurrent_vector<T>::begin( );
    }
 
-   auto end( ) const {
+   const_iterator end( ) const {
       return tbb::concurrent_vector<T>::begin( ) + size( );
    }
 
-   auto cbegin( ) const {
+   const_iterator cbegin( ) const {
       return tbb::concurrent_vector<T>::cbegin( );
    }
 
-   auto cend( ) const {
+   const_iterator cend( ) const {
       return tbb::concurrent_vector<T>::cbegin( ) + size( );
    }
 };
