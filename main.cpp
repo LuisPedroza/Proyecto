@@ -1,6 +1,5 @@
 #include "lib/archivo.h"
 #include "lib/lexer.h"
-#include "lib/vector.h"
 #include <iostream>
 
 using char_iterator = concurrent_vector<char>::const_iterator;

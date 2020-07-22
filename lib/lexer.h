@@ -77,7 +77,7 @@ struct token_anotada {
 };
 
 template<typename RI>
-void consume_comentario(RI& iter, char fin){    
+void esquiva(RI& iter, char fin){    
     while(*iter != fin){        
         iter++;
     }    
@@ -86,15 +86,7 @@ void consume_comentario(RI& iter, char fin){
 
 template<typename RI>
 void lexer(concurrent_vector<token_anotada<RI>>& tokens, RI iter) {
-    while(*iter != '\0'){
-        if(*iter == '\''){
-            consume_comentario(iter,'\n');
-        }else if(*iter == '"'){
-            iter++;
-            consume_comentario(iter,'"');
-        }        
-        iter++;
-    }
+    
 }
 
 #endif
