@@ -23,6 +23,13 @@ int main(int argc, char *argv[]) {
 
    concurrent_vector<token_anotada<char_iterator>> tokens;
    lexer(tokens, archivo.cbegin());
+
+   for(auto it : tokens){
+      while(it.ini != it.fin){
+         std::cout << *(it.ini++);         
+      }
+      std::cout << '\t' << it.tipo << '\n';
+   } 
       
    std::cout << '\n';
 
