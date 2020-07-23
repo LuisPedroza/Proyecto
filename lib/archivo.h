@@ -3,9 +3,11 @@
 
 #include "vector.h"
 #include <fstream>
+#include <string_view>
 
-void lee_archivo(concurrent_vector<char>& v, std::ifstream& ifs){
-   int tam = 4096;
+template<typename OI>
+void lee_archivo(std::ifstream& ifs, OI salida){
+   constexpr int tam = 4096;
    char pagina[tam];
    while (ifs) {
       ifs.read(pagina, tam);
@@ -13,10 +15,10 @@ void lee_archivo(concurrent_vector<char>& v, std::ifstream& ifs){
       if(leidos == 0){
          break;
       }else{
-         v.append(pagina, pagina + leidos);
+         *salida++ = std::string_view(pagina, leidos);
       }
    }
-   v.push_back('\0');
+   *salida++ = '\0';
 }
 
 #endif
