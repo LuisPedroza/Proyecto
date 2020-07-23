@@ -5,6 +5,7 @@
 
 enum token {
     FUNCION,
+    MAIN,
     ARREGLO,
     NUMERO,
     PARENTESIS_IZQ,
@@ -39,11 +40,13 @@ enum token {
     IF,
     ELSE,
     RETURN,
+    DESCONOCIDO,
     FIN_ARCHIVO
 };
 
 std::vector<std::pair<std::string, token>> reservado = {
     {"function", FUNCION},
+    {"main", MAIN},
     {"array", ARREGLO},
     {"number", NUMERO},    
     {"(", PARENTESIS_IZQ},
@@ -150,10 +153,8 @@ bool busca_reservada(const std::string& s,RI& iter){
 
 template<typename RI>
 void lexer(concurrent_vector<token_anotada<RI>>& tokens, RI iter) {
-    for( ; ; ){
-        if(std::isspace(*iter)){
-            esquiva(iter, isspace);    
-        }        
+    for( ; ; ){        
+        esquiva(iter, isspace);            
         if(*iter == '\0'){
             tokens.push_back({FIN_ARCHIVO,iter,iter});
             break;
@@ -174,6 +175,8 @@ void lexer(concurrent_vector<token_anotada<RI>>& tokens, RI iter) {
                 tokens.push_back({IDENTIFICADOR, ini, iter});
             }else if(consume_literal(iter)){
                 tokens.push_back({LITERAL_NUMERICA, ini, iter});
+            }else{
+                throw std::make_pair(token_anotada{DESCONOCIDO, ini, iter}, "Simbolo desconocido");
             }
         }                
     }

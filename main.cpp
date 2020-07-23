@@ -19,18 +19,22 @@ int main(int argc, char *argv[]) {
    }
 
    concurrent_vector<char> archivo;
-   lee_archivo(archivo, entrada);
-
    concurrent_vector<token_anotada<char_iterator>> tokens;
-   lexer(tokens, archivo.cbegin());
+      
+   try{
+      lee_archivo(archivo, entrada);
+      lexer(tokens, archivo.cbegin());
+   }catch(const std::pair<token_anotada<char_iterator>, const char*>& e){
+      std::cout << "Error: " << e.second << "\n";
+   }
 
-   for(auto it : tokens){
+   /* for(auto it : tokens){
       while(it.ini != it.fin){
          std::cout << *(it.ini++);         
       }
       std::cout << '\t' << it.tipo << '\n';
    } 
       
-   std::cout << '\n';
+   std::cout << '\n'; */
 
 }
