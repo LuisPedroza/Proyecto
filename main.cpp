@@ -1,8 +1,12 @@
 #include "lib/archivo.h"
+#include "lib/concurrent_vector.h"
+#include "lib/iterator.h"
 #include "lib/lexer.h"
 #include <cstring>
+#include <fstream>
 #include <iostream>
 #include <iterator>
+#include <vector>
 
 int main(int argc, char *argv[]) {
    if (argc < 2) {
@@ -19,15 +23,34 @@ int main(int argc, char *argv[]) {
    bool debug = (argc >= 3 && std::strcmp(argv[2], "debug") == 0);
    bool secuencial = (debug || argc >= 3 && std::strcmp(argv[2], "secuencial") == 0);
 
-   using char_iterator = concurrent_vector<char>::const_iterator;
-   concurrent_vector<char> archivo;
-   concurrent_vector<token_anotada<char_iterator>> tokens;
+   if (secuencial) {
+      using char_iterator = std::vector<char>::const_iterator;
+      std::vector<char> archivo;
+      std::vector<lib::token_anotada<char_iterator>> tokens;
 
-   try{
-      lee_archivo(entrada, append_inserter(archivo));
-      lexer(archivo.cbegin(), std::back_inserter(tokens));
-   }catch(const std::pair<token_anotada<char_iterator>, const char*>& e){
-      std::cout << "Error: " << e.second << "\n";
+      try{
+         lib::lee_archivo(entrada, lib::back_inserter(archivo));
+         if (debug) {
+            //... imprimir archivo
+         }
+         lib::lexer(archivo.cbegin(), lib::back_inserter(tokens));
+         if (debug) {
+            // imprimir tokens
+         }
+      }catch(const std::pair<lib::token_anotada<char_iterator>, const char*>& e){
+         std::cout << "Error: " << e.second << "\n";
+      }
+   } else {
+      using char_iterator = lib::concurrent_vector<char>::const_iterator;
+      lib::concurrent_vector<char> archivo;
+      lib::concurrent_vector<lib::token_anotada<char_iterator>> tokens;
+
+      try{
+         lib::lee_archivo(entrada, lib::back_inserter(archivo));
+         lib::lexer(archivo.cbegin(), lib::back_inserter(tokens));
+      }catch(const std::pair<lib::token_anotada<char_iterator>, const char*>& e){
+         std::cout << "Error: " << e.second << "\n";
+      }
    }
 
 
