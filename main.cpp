@@ -31,11 +31,20 @@ int main(int argc, char *argv[]) {
       try{
          lib::lee_archivo(entrada, lib::back_inserter(archivo));
          if (debug) {
-            //... imprimir archivo
+            std::cout << "Archivo leido." << '\n';
+            for(char c : archivo){
+               std::cout << c;
+            }
          }
          lib::lexer(archivo.cbegin(), lib::back_inserter(tokens));
          if (debug) {
-            // imprimir tokens
+            std::cout << "Tokens leidos." << '\n';
+            for(auto i : tokens){
+               while(i.ini != i.fin){
+                  std::cout << *i.ini++;
+               }
+               std::cout << '\t' << i.tipo << '\n';
+            }
          }
       }catch(const std::pair<lib::token_anotada<char_iterator>, const char*>& e){
          std::cout << "Error: " << e.second << "\n";
@@ -52,16 +61,5 @@ int main(int argc, char *argv[]) {
          std::cout << "Error: " << e.second << "\n";
       }
    }
-
-
-
-   /* for(auto it : tokens){
-      while(it.ini != it.fin){
-         std::cout << *(it.ini++);
-      }
-      std::cout << '\t' << it.tipo << '\n';
-   }
-
-   std::cout << '\n'; */
 
 }

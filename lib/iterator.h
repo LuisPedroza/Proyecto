@@ -8,7 +8,7 @@
 namespace lib {
    template<typename T, typename II>
    concept has_insert = requires(T& v, II ini, II fin) {
-      v.insert(v.end( ), v.begin( ), v.end( ));
+      v.insert(v.end( ), ini, fin);
    };
 
    template<typename T, typename II>
