@@ -24,7 +24,7 @@ function main(number n): number {      ' la entrada son los parámetros de main,
    if n = 1 {                          ' como el lenguaje es funcional (no se puede modificar una variable después de asignarla) podemos usar = aquí
       return f(n, 5) + g( );           ' se imprime automáticamente lo que main regresa
    } else if n = 2 {
-      return 8.567;
+      return .567;
    } else {
       return h( ) + i( );
    }

@@ -134,9 +134,12 @@ namespace lib {
    }
 
    template<typename RI>
-   bool consume_literal(RI& iter){
+   bool consume_literal(RI& iter){       
        auto aux = iter;
        esquiva(iter, isdigit);
+       if(aux == iter){
+           return false;
+       }
        if(es_punto(*iter) && std::isdigit(*(iter + 1))){
            esquiva(iter += 2, isdigit);
        }
