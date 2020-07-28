@@ -17,8 +17,12 @@ namespace lib {
    };
 
    template<typename T>
-   struct back_insert_iterator {
+   class back_insert_iterator {
       T& contenedor;
+   public:
+      back_insert_iterator(T& c)
+      : contenedor(c) {
+      }
 
       back_insert_iterator& operator*( ) {
          return *this;
@@ -55,6 +59,51 @@ namespace lib {
    template<typename T>
    back_insert_iterator<T> back_inserter(T& v) {
       return back_insert_iterator<T>{v};
+   }
+
+
+   template<typename T>
+   class input_iterator {
+      T& contenedor;
+      std::size_t offset;
+      mutable std::size_t tam_cache_;
+   public:
+      using value_type = typename T::value_type;
+
+      input_iterator(T& c)
+      : contenedor(c), offset(0), tam_cache_(0) {
+      }
+
+      const auto& operator*( ) const {
+         return accesa(offset);
+      }
+
+      const auto& operator[](std::size_t i) const {
+         return accesa(offset + i);
+      }
+
+      input_iterator& operator++( ) {
+         ++offset;
+         return *this;
+      }
+
+      input_iterator operator++(int) {
+         auto temp = *this;
+         return ++*this, temp;
+      }
+
+   private:
+      const value_type& accesa(std::size_t i) const {
+         while (i >= tam_cache_) {
+            tam_cache_ = contenedor.size( );
+         }
+         return contenedor[i];
+      }
+   };
+
+   template<typename T>
+   input_iterator<T> make_input_iterator(T& v) {
+      return input_iterator<T>{v};
    }
 }
 
