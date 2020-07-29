@@ -69,27 +69,47 @@ namespace lib {
       mutable std::size_t tam_cache_;
    public:
       using value_type = typename T::value_type;
+      using pointer = value_type*;
+      using reference = value_type&;
+      using difference_type = std::ptrdiff_t;
+      using iterator_category = std::input_iterator_tag;
 
       input_iterator(T& c)
       : contenedor(c), offset(0), tam_cache_(0) {
       }
 
-      const auto& operator*( ) const {
+      const value_type& operator*( ) const {
          return accesa(offset);
       }
 
-      const auto& operator[](std::size_t i) const {
+      const value_type& operator[](std::ptrdiff_t i) const {
          return accesa(offset + i);
       }
 
-      input_iterator& operator++( ) {
-         ++offset;
+      input_iterator& operator+=(std::ptrdiff_t i) {
+         offset += i;
          return *this;
       }
 
-      input_iterator operator++(int) {
+      input_iterator operator+(std::ptrdiff_t i) {
          auto temp = *this;
-         return ++*this, temp;
+         return temp += i;
+      }
+
+      input_iterator& operator++( ) {
+         return *this += 1;
+      }
+
+      input_iterator operator++(int) {
+         return *this + 1;
+      }
+
+      bool operator==(const input_iterator& i) const {
+         return &contenedor == &i.contenedor && offset == i.offset;
+      }
+
+      bool operator!=(const input_iterator& i) const {
+         return !(*this == i);
       }
 
    private:

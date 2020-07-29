@@ -51,14 +51,14 @@ int main(int argc, char *argv[]) {
          std::cout << "Error: " << e.second << "\n";
       }
    } else {
-      using char_iterator = lib::concurrent_vector<char>::const_iterator;
+      using char_iterator = lib::input_iterator<lib::concurrent_vector<char>>;
       lib::concurrent_vector<char> archivo;
       lib::concurrent_vector<lib::token_anotada<char_iterator>> tokens;
 
       try{
          tbb::parallel_invoke(
-            [&] {lib::lee_archivo(entrada, lib::back_inserter(archivo)); },
-            [&] {lib::lexer(lib::make_input_iterator(archivo), lib::back_inserter(tokens)); }
+            [&] { lib::lee_archivo(entrada, lib::back_inserter(archivo)); },
+            [&] { lib::lexer(lib::make_input_iterator(archivo), lib::back_inserter(tokens)); }
          );
          //lib::lee_archivo(entrada, lib::back_inserter(archivo));
          //lib::lexer(lib::make_input_iterator(archivo), lib::back_inserter(tokens));
