@@ -86,6 +86,10 @@ namespace lib {
          return accesa(offset + i);
       }
 
+      const value_type* operator->() const {
+         return &accesa(offset);
+      }
+
       input_iterator& operator+=(std::ptrdiff_t i) {
          offset += i;
          return *this;
@@ -101,9 +105,11 @@ namespace lib {
       }
 
       input_iterator operator++(int) {
-         return *this + 1;
+         auto temp = *this;
+         ++*this;
+         return temp;
       }
-
+      
       bool operator==(const input_iterator& i) const {
          return &contenedor == &i.contenedor && offset == i.offset;
       }
