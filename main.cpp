@@ -2,6 +2,7 @@
 #include "lib/concurrent_vector.h"
 #include "lib/iterator.h"
 #include "lib/lexer.h"
+#include "tbb/parallel_invoke.h"
 #include <cstring>
 #include <fstream>
 #include <iostream>
@@ -55,8 +56,12 @@ int main(int argc, char *argv[]) {
       lib::concurrent_vector<lib::token_anotada<char_iterator>> tokens;
 
       try{
-         lib::lee_archivo(entrada, lib::back_inserter(archivo));
-         lib::lexer(archivo.cbegin(), lib::back_inserter(tokens));
+         tbb::parallel_invoke(
+            [&] {lib::lee_archivo(entrada, lib::back_inserter(archivo)); },
+            [&] {lib::lexer(lib::make_input_iterator(archivo), lib::back_inserter(tokens)); }
+         );
+         //lib::lee_archivo(entrada, lib::back_inserter(archivo));
+         //lib::lexer(lib::make_input_iterator(archivo), lib::back_inserter(tokens));
       }catch(const std::pair<lib::token_anotada<char_iterator>, const char*>& e){
          std::cout << "Error: " << e.second << "\n";
       }
