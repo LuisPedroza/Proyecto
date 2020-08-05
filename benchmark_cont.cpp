@@ -15,7 +15,7 @@ public:
     }
 
     ~Timer(){
-        stop();    
+        stop();
     }
 
     void stop(){
@@ -24,7 +24,7 @@ public:
         auto ini = std::chrono::time_point_cast<std::chrono::microseconds>(ini_t).time_since_epoch().count();
         auto fin = std::chrono::time_point_cast<std::chrono::microseconds>(fin_t).time_since_epoch().count();
         auto tiempo = fin - ini;
-        double seg = tiempo * 0.000001;        
+        double seg = tiempo * 0.000001;
         std::cout << seg << '\n';
     }
 
@@ -33,7 +33,7 @@ private:
 };
 
 int main(int argc, char *argv[]) {
-      
+
    int n = 10000000;
 
    lib::concurrent_vector<int> v_lib;
@@ -42,7 +42,7 @@ int main(int argc, char *argv[]) {
    tbb::concurrent_queue<int> q_tbb;
    std::deque<int> d;
 
-   
+
    {
       std::cout << "lib::concurrent_vector : \t";
       Timer t;

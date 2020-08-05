@@ -17,7 +17,7 @@ public:
     }
 
     ~Timer(){
-        stop();    
+        stop();
     }
 
     void stop(){
@@ -26,7 +26,7 @@ public:
         auto ini = std::chrono::time_point_cast<std::chrono::microseconds>(ini_t).time_since_epoch().count();
         auto fin = std::chrono::time_point_cast<std::chrono::microseconds>(fin_t).time_since_epoch().count();
         auto tiempo = fin - ini;
-        double seg = tiempo * 0.000001;        
+        double seg = tiempo * 0.000001;
         std::cout << seg << '\n';
     }
 
@@ -56,8 +56,8 @@ int main(int argc, char *argv[]) {
 
       try{
          Timer t;
-         lib::lee_archivo(entrada, lib::back_inserter(archivo));         
-         lib::lexer(archivo.cbegin(), lib::back_inserter(tokens));         
+         lib::lee_archivo(entrada, lib::back_inserter(archivo));
+         lib::lexer(archivo.cbegin(), lib::back_inserter(tokens));
       }catch(const std::pair<lib::token_anotada<char_iterator>, const char*>& e){
          std::cout << "Error: " << e.second << "\n";
       }
@@ -68,12 +68,12 @@ int main(int argc, char *argv[]) {
 
       try{
          Timer t;
-         tbb::parallel_invoke(
+         /*tbb::parallel_invoke(
             [&] { lib::lee_archivo(entrada, lib::back_inserter(archivo)); },
             [&] { lib::lexer(lib::make_input_iterator(archivo), lib::back_inserter(tokens)); }
-         );
-         //lib::lee_archivo(entrada, lib::back_inserter(archivo));
-         //lib::lexer(lib::make_input_iterator(archivo), lib::back_inserter(tokens));
+         );*/
+         lib::lee_archivo(entrada, lib::back_inserter(archivo));
+         lib::lexer(lib::make_input_iterator(archivo), lib::back_inserter(tokens));
       }catch(const std::pair<lib::token_anotada<char_iterator>, const char*>& e){
          std::cout << "Error: " << e.second << "\n";
       }

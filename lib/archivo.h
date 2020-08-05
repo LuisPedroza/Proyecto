@@ -5,18 +5,11 @@
 
 namespace lib {
    template<typename OI>
-   void lee_archivo(std::istream& ifs, OI salida){
-      constexpr int tam = 4096;
-      char pagina[tam];
-      while (ifs) {
-         ifs.read(pagina, tam);
-         int leidos = ifs.gcount();
-         if(leidos == 0){
-            break;
-         }else{
-            *salida++ = std::make_pair(pagina, pagina + leidos);
-         }
-      }
+   void lee_archivo(std::istream& is, OI&& salida) {
+      do {
+         is.read(salida, 4096);
+         salida += is.gcount();
+      } while (is);
       *salida++ = '\0';
    }
 }

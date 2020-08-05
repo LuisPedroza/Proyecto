@@ -102,30 +102,31 @@ namespace lib {
        return c == '.';
    }
 
-   template<typename RI>
    struct token_anotada {
        token tipo;
-       RI ini, fin;
+       const char* ini;
+       const char* fin;
    };
 
-   template<typename RI, typename P>
-   void esquiva(RI& iter, P pred){
+   template<typename FI, typename P>
+   void esquiva(FI& iter, P pred){
        while(pred(*iter)){
            iter++;
        }
    }
 
-   template<typename RI>
-   bool consume(const std::string& s, RI& iter){
-       if(std::equal(s.begin(), s.end(), iter)){
-           iter += s.size();
-           return true;
+   template<typename FI>
+   bool consume(const std::string& s, FI& iter){
+       auto res = std::mismatch(s.begin(), s.end(), iter);
+       if (res.first == s.end()) {
+          iter = res.second;
+          return true;
        }
        return false;
    }
 
-   template<typename RI>
-   bool consume_id(RI& iter){
+   template<typename FI>
+   bool consume_id(FI& iter){
        if(inicia_id(*iter)){
            esquiva(++iter, sigue_id);
            return true;
@@ -133,21 +134,22 @@ namespace lib {
        return false;
    }
 
-   template<typename RI>
-   bool consume_literal(RI& iter){       
+   template<typename FI>
+   bool consume_literal(FI& iter){
        auto aux = iter;
        esquiva(iter, isdigit);
        if(aux == iter){
            return false;
        }
-       if(es_punto(*iter) && std::isdigit(*(iter + 1))){
-           esquiva(iter += 2, isdigit);
+       if(es_punto(*iter) && std::isdigit(*std::next(iter))){
+           std::advance(iter, 2);
+           esquiva(iter, isdigit);
        }
        return !(aux == iter);
    }
 
-   template<typename RI>
-   bool busca_reservada(const std::string& s,RI& iter){
+   template<typename FI>
+   bool busca_reservada(const std::string& s,FI& iter){
        if(std::equal(s.begin(), s.end(), iter)){
            iter += s.size();
            return true;
@@ -155,12 +157,12 @@ namespace lib {
        return false;
    }
 
-   template<typename RI, typename OI>
-   void lexer(RI iter, OI salida) {
+   template<typename FI, typename OI>
+   void lexer(FI iter, OI&& salida) {
        for( ; ; ){
            esquiva(iter, isspace);
            if(*iter == '\0'){
-               *salida++ = token_anotada<RI>{FIN_ARCHIVO,iter,iter};
+               *salida++ = token_anotada{FIN_ARCHIVO,iter,iter};
                break;
            }
            auto ini = iter;
@@ -174,13 +176,13 @@ namespace lib {
                    return consume(x.first, iter);
                });
                if(aux != reservado.end()){
-                   *salida++ = token_anotada<RI>{aux->second, ini, iter};
+                   *salida++ = token_anotada{aux->second, ini, iter};
                }else if(consume_id(iter)){
-                   *salida++ = token_anotada<RI>{IDENTIFICADOR, ini, iter};
+                   *salida++ = token_anotada{IDENTIFICADOR, ini, iter};
                }else if(consume_literal(iter)){
-                   *salida++ = token_anotada<RI>{LITERAL_NUMERICA, ini, iter};
+                   *salida++ = token_anotada{LITERAL_NUMERICA, ini, iter};
                }else{
-                   throw std::make_pair(token_anotada<RI>{DESCONOCIDO, ini, iter}, "Simbolo desconocido");
+                   throw std::make_pair(token_anotada{DESCONOCIDO, ini, iter}, "Simbolo desconocido");
                }
            }
        }
