@@ -73,8 +73,8 @@ int main(int argc, char *argv[]) {
          reporta_error(std::cout, archivo.data( ), archivo.data( ) + archivo.size( ), e);
       }
    } else {
-      lib::concurrent_buffer<char> archivo(tam_archivo);
-      lib::concurrent_buffer<lib::token_anotada> tokens(tam_archivo);
+      lib::concurrent_buffer<char> archivo(tam_archivo + 1);
+      lib::concurrent_buffer<lib::token_anotada> tokens(tam_archivo + 1);
 
       try{
          tbb::parallel_invoke(
