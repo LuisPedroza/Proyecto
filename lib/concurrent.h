@@ -1,11 +1,10 @@
 #ifndef LIB_CONCURRENT_H
 #define LIB_CONCURRENT_H
 
-#include <tbb/concurrent_vector.h>
 #include <atomic>
+#include <cstddef>
 #include <iterator>
 #include <memory>
-#include <utility>
 
 namespace lib {
    template<typename T>
@@ -74,94 +73,8 @@ namespace lib {
          return iter_fin;
       }
 
-      const std::atomic<iterator>& concurrent_end( ) const {
+      const std::atomic<iterator>& resizable_end( ) const {
          return iter_fin;
-      }
-   };
-
-   template<typename T>
-   class concurrent_vector : private tbb::concurrent_vector<T> {
-      std::atomic<std::size_t> tam;
-   public:
-      using value_type = T;
-      using iterator = tbb::concurrent_vector<T>::iterator;
-      using const_iterator = tbb::concurrent_vector<T>::const_iterator;
-
-      concurrent_vector( )
-      : tam(tbb::concurrent_vector<T>::size( )) {
-      }
-
-      concurrent_vector(concurrent_vector&& v)
-      : tbb::concurrent_vector<T>(std::move(v)), tam(tbb::concurrent_vector<T>::size( )) {
-      }
-
-      concurrent_vector(const concurrent_vector& v)
-      : tbb::concurrent_vector<T>(v), tam(tbb::concurrent_vector<T>::size( )) {
-      }
-
-      concurrent_vector& operator=(concurrent_vector&& v) {
-         if (this != &v) {
-            tbb::concurrent_vector<T>::operator=(std::move(v));
-            tam = tbb::concurrent_vector<T>::size( );
-         }
-         return *this;
-      }
-
-      concurrent_vector& operator=(const concurrent_vector& v) {
-         if (this != &v) {
-            tbb::concurrent_vector<T>::operator=(v);
-            tam = tbb::concurrent_vector<T>::size( );
-         }
-         return *this;
-      }
-
-      std::size_t size( ) const {
-         return tam;
-      }
-
-      void push_back(T v) {
-         tbb::concurrent_vector<T>::push_back(std::move(v));
-         tam = tbb::concurrent_vector<T>::size( );
-      }
-
-      value_type& operator[](std::size_t i) {
-         return begin( )[i];
-      }
-
-      const value_type& operator[](std::size_t i) const {
-         return begin( )[i];
-      }
-
-      value_type& front( ) {
-         return *begin( );
-      }
-
-      const value_type& front( ) const {
-         return *begin( );
-      }
-
-      value_type& back( ) {
-         return *std::prev(end( ));
-      }
-
-      const value_type& back( ) const {
-         return *std::prev(end( ));
-      }
-
-      iterator begin( ) {
-         return tbb::concurrent_vector<T>::begin( );
-      }
-
-      iterator end( ) {
-         return tbb::concurrent_vector<T>::begin( ) + size( );
-      }
-
-      const_iterator begin( ) const {
-         return tbb::concurrent_vector<T>::begin( );
-      }
-
-      const_iterator end( ) const {
-         return tbb::concurrent_vector<T>::begin( ) + size( );
       }
    };
 
@@ -177,7 +90,7 @@ namespace lib {
       using iterator_category = std::forward_iterator_tag;
 
       concurrent_inspect_iterator(const T& c)
-      : iter(c.begin( )), fin(&c.concurrent_end( )) {
+      : iter(c.begin( )), fin(&c.resizable_end( )) {
       }
 
       value_type& operator*( ) const {
@@ -188,7 +101,7 @@ namespace lib {
       }
 
       pointer operator->( ) const {
-         return &**this;
+         return &operator*( );
       }
 
       concurrent_inspect_iterator& operator++( ) {
@@ -198,11 +111,11 @@ namespace lib {
 
       concurrent_inspect_iterator operator++(int) {
          auto temp = *this;
-         ++*this;
+         operator++( );
          return temp;
       }
 
-      operator typename T::const_iterator( ) const {
+      operator const typename T::const_iterator( ) const {
          return iter;
       }
    };

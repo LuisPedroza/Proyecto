@@ -2,6 +2,9 @@
 #define LIB_LEXER_H
 
 #include <cctype>
+#include <string_view>
+#include <utility>
+#include <vector>
 
 namespace lib {
    enum token {
@@ -45,7 +48,7 @@ namespace lib {
        FIN_ARCHIVO
    };
 
-   std::vector<std::pair<std::string, token>> reservado = {
+   std::vector<std::pair<std::string_view, token>> reservado = {
        {"function", FUNCION},
        {"main", MAIN},
        {"array", ARREGLO},
@@ -116,7 +119,7 @@ namespace lib {
    }
 
    template<typename FI>
-   bool consume(const std::string& s, FI& iter){
+   bool consume(const std::string_view& s, FI& iter){
        auto res = std::mismatch(s.begin(), s.end(), iter);
        if (res.first == s.end()) {
           iter = res.second;
@@ -148,15 +151,6 @@ namespace lib {
        return !(aux == iter);
    }
 
-   template<typename FI>
-   bool busca_reservada(const std::string& s,FI& iter){
-       if(std::equal(s.begin(), s.end(), iter)){
-           iter += s.size();
-           return true;
-       }
-       return false;
-   }
-
    template<typename FI, typename OI>
    void lexer(FI iter, OI&& salida) {
        for( ; ; ){
@@ -167,10 +161,10 @@ namespace lib {
            }
            auto ini = iter;
            if(*iter == '\''){
-               esquiva(iter, sigue_comentario_linea);
+               esquiva(++iter, sigue_comentario_linea);
            }else if(*iter == '"'){
                esquiva(++iter, sigue_comentario_bloque);
-               iter++;
+               ++iter;
            }else{
                auto aux = std::find_if(reservado.begin(), reservado.end(), [&](const auto& x){
                    return consume(x.first, iter);

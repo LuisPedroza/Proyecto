@@ -2,6 +2,7 @@
 #include "lib/concurrent.h"
 #include "lib/lexer.h"
 #include "tbb/parallel_invoke.h"
+#include <algorithm>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
@@ -9,6 +10,25 @@
 #include <iterator>
 #include <utility>
 #include <vector>
+
+int linea_de(const char* ini, const lib::token_anotada& t) {
+   return 1 + std::count(ini, t.ini, '\n');
+}
+
+int columna_de(const char* ini, const lib::token_anotada& t) {
+   return 1 + (t.ini - std::find(std::reverse_iterator(t.ini), std::reverse_iterator(ini), '\n').base( ));
+}
+
+std::string_view vista_de(const lib::token_anotada& t, int len, const char* fin) {
+   return { t.ini, std::size_t(std::find(t.ini, (fin - t.ini <= len ? fin : t.ini + len), '\n') - t.ini) };
+}
+
+void reporta_error(std::ostream& os, const char* ini, const char* fin, const std::pair<lib::token_anotada, const char*>& e) {
+   os << "Error en linea " << linea_de(ini, e.first) << ", columna " << columna_de(ini, e.first) << ":\n"
+      << "\t" << vista_de(e.first, 10, fin) << "\n"
+      << "\t^\n"
+      << e.second << "\n";
+}
 
 int main(int argc, char *argv[]) {
    if (argc < 2) {
@@ -50,7 +70,7 @@ int main(int argc, char *argv[]) {
             }
          }
       }catch(const std::pair<lib::token_anotada, const char*>& e){
-         std::cout << "Error: " << e.second << "\n";
+         reporta_error(std::cout, archivo.data( ), archivo.data( ) + archivo.size( ), e);
       }
    } else {
       lib::concurrent_buffer<char> archivo(tam_archivo);
@@ -64,7 +84,7 @@ int main(int argc, char *argv[]) {
          //lib::lee_archivo(entrada, archivo.resizable_end( ));
          //lib::lexer(lib::concurrent_inspect_iterator(archivo), std::back_inserter(tokens));
       }catch(const std::pair<lib::token_anotada, const char*>& e){
-         std::cout << "Error: " << e.second << "\n";
+         reporta_error(std::cout, archivo.begin( ), archivo.end( ), e);
       }
    }
 
