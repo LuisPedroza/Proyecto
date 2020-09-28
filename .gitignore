@@ -1,6 +1,6 @@
-
 *.o
 *.exe
 .vscode/
 out.txt
 test2.txt
+/generador/fmt
