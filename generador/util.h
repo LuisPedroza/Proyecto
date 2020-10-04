@@ -22,22 +22,33 @@ class generador {
     }
 };
 
+struct funcion{
+    int tipo;
+    std::string nombre;
+    std::vector<int> parametros;
+};
+
 struct datos {
     generador g;
     int if_dentro;
     std::vector<std::string> v_num;
     std::vector<std::string> v_arr;
 
-    std::string obten_id_num(std::string s) {
-        int tam = v_num.size();
+    std::string obten_id(std::string s, int t) {
+        int tam_n = v_num.size();
+        int tam_a = v_arr.size();
         std::string id;
         while (true) {
-            id = v_num[g.rand() % tam];
+            id = (t == 0 ? v_num[g.rand() % tam_n] : v_arr[g.rand() % tam_a]);
             if (id != s) {
                 break;
             }
         }
         return id;
+    }
+
+    datos(){
+        
     }
 
     char genera_car(int op) {
@@ -56,6 +67,7 @@ struct datos {
         t == 0 ? v_num.push_back(aux) : v_arr.push_back(aux);
         return aux;
     }
+    
 
     std::string genera_id_func() {
         std::string s1 = "", s2 = "", s3 = "";
@@ -67,11 +79,15 @@ struct datos {
         return fmt::format("{}_{}_{}", s2, s1, s3);
     }
 
+    std::string genera_var_num(std::string s){
+        return (g.rand() % 2 == 0 ? obten_id(s, 0) : std::to_string(g.rand()));
+    }
+
     std::string genera_tipo() {
         return (g.rand() % 2 == 0 ? "number" : "array");
     }
 
-    int genera_num_int() {
+    int genera_int() {
         return g.rand();
     }
 
@@ -89,7 +105,7 @@ struct datos {
         return fmt::format("[{}]", s);
     }
 
-    std::string genera_parametros(int& lim_a) {
+    std::string genera_parametros() {
         std::string s = "";
         int t = (g.rand() % 10) + 5;
         for (int i = 0; i < t; ++i) {
@@ -97,8 +113,7 @@ struct datos {
             if (aux[0] == 'n') {
                 s += (aux + " " + genera_id_var(0));
             } else {
-                s += (aux + " " + genera_id_var(1));
-                lim_a += 1;
+                s += (aux + " " + genera_id_var(1));                
             }
             if (i == t - 1) {
                 continue;
@@ -109,13 +124,13 @@ struct datos {
         return fmt::format("({})", s);
     }
 
-    std::string genera_condicion(int lim_a) {
+    std::string genera_condicion() {
         std::vector<std::string> v;
         v.push_back(std::to_string(g.rand()));
-        v.push_back(obten_id_num(""));
-        if (lim_a != 0) {
-            v.push_back(v_arr[g.rand() % (lim_a)] + "(" + std::to_string(((g.rand() % 5) + 1)) + ")");
-            v.push_back("#" + v_arr[g.rand() % lim_a]);
+        v.push_back(obten_id("", 0));
+        if (!v_arr.empty()) {
+            v.push_back(obten_id("", 1) + "(" + std::to_string((g.rand() % 5) + 1) + ")");
+            v.push_back("#" + obten_id("", 1));
         }
         int tam = v.size();
         return fmt::format("{} {} {}", v[g.rand() % tam], genera_op_cond(), v[g.rand() % tam]);
