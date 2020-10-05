@@ -10,6 +10,11 @@
 
 using map_f = std::unordered_map<std::string, std::vector<int>>;
 
+struct funciones{
+    map_f num;
+    map_f arr;
+};
+
 class generador {
     std::random_device rd;
     std::mt19937 gen;
@@ -78,14 +83,19 @@ struct datos {
         return aux;
     }
     
-    std::string genera_id_func(generador& g) {
+    std::string genera_id_func(generador& g, funciones& f) {
         std::string s1 = "", s2 = "", s3 = "", id;
-        for (int i = 0; i < 3; ++i) {
-            s1 += genera_car(g,0);
-            s2 += genera_car(g,1);
-            s3 += genera_car(g,2);
-        }
-        id = fmt::format("{}_{}_{}", s2, s1, s3);            
+        while(true){
+            for (int i = 0; i < 3; ++i) {
+                s1 += genera_car(g,0);
+                s2 += genera_car(g,1);
+                s3 += genera_car(g,2);
+            }
+            id = fmt::format("{}_{}_{}", s2, s1, s3);
+            if(f.arr.count(id) == 0 && f.num.count(id) == 0){
+                break;
+            }
+        }                    
         return id;
     }
 
@@ -111,17 +121,17 @@ struct datos {
         return fmt::format("[{}]", s);
     }
 
-    std::string genera_parametros(generador& g) {
+    std::string genera_parametros(generador& g, std::vector<int>& v) {
         std::string s = "";        
         int t = (g.rand() % 5) + 1;
         for (int i = 0; i < t; ++i) {
             auto aux = genera_tipo(g);
             if (aux[0] == 'n') {
                 s += (aux + " " + genera_id_var(g, 0));
-                //v.push_back(0);
+                v.push_back(0);
             } else {
                 s += (aux + " " + genera_id_var(g, 1));                
-                //v.push_back(1);
+                v.push_back(1);
             }
             if (i == t - 1) {
                 continue;
