@@ -15,27 +15,27 @@ std::string arregla_tab(std::string s) {
     return s;
 }
 
-std::string genera(generador& g, bool dentro, datos d, std::string tab, int if_dentro, funciones& f) {
+std::string genera(generador& g, int dentro, datos d, std::string tab, int if_dentro, funciones& f, std::string nombre) {
     std::string var1, var2, der;
-    if (dentro) {
-        int opcion = g.rand() % 6;
+    if (dentro != 0) {
+        int opcion = g.rand() % 10;
         if (opcion == 0) {
             var1 = d.genera_id_var(g, 0);
-            return fmt::format("{}number {} = {};\n{}", tab, var1, g.rand(), genera(g, true, d, tab, if_dentro, f));
+            return fmt::format("{}number {} = {};\n{}", tab, var1, g.rand(), genera(g, dentro, d, tab, if_dentro, f, nombre));
         } else if (opcion == 1) {
             var1 = d.genera_id_var(g, 0);
             if (d.v_num.size() < 4) {
-                return fmt::format("{}number {} = {};\n{}", tab, var1, g.rand(), genera(g, true, d, tab, if_dentro, f));
+                return fmt::format("{}number {} = {};\n{}", tab, var1, g.rand(), genera(g, dentro, d, tab, if_dentro, f, nombre));
             } else {
-                return fmt::format("{}number {} = {} {} {};\n{}", tab, var1, d.genera_var_num(g, var1), genera_op_num(), d.genera_var_num(g, var1), genera(g, true, d, tab, if_dentro, f));
+                return fmt::format("{}number {} = {} {} {};\n{}", tab, var1, d.genera_var_num(g, var1), genera_op_num(), d.genera_var_num(g, var1), genera(g, dentro, d, tab, if_dentro, f, nombre));
             }
         } else if (opcion == 2) {
             var1 = d.genera_id_var(g, 1);
-            return fmt::format("{}array {} = {};\n{}", tab, var1, d.genera_arreglo(g), genera(g, true, d, tab, if_dentro, f));
+            return fmt::format("{}array {} = {};\n{}", tab, var1, d.genera_arreglo(g), genera(g, dentro, d, tab, if_dentro, f, nombre));
         } else if (opcion == 3) {
             var1 = d.genera_id_var(g, 1);
             if (d.v_arr.size() < 4) {
-                return fmt::format("{}array {} = {};\n{}", tab, var1, d.genera_arreglo(g), genera(g, true, d, tab, if_dentro, f));
+                return fmt::format("{}array {} = {};\n{}", tab, var1, d.genera_arreglo(g), genera(g, dentro, d, tab, if_dentro, f, nombre));
             } else {
                 int op_arr = g.rand() % 4;
                 if (op_arr == 0) {
@@ -47,25 +47,49 @@ std::string genera(generador& g, bool dentro, datos d, std::string tab, int if_d
                 } else {
                     der = fmt::format("{}{} * {}{}", d.obten_id(g, var1, 1), d.genera_slice(g), d.obten_id(g, var1, 1), d.genera_slice(g));
                 }
-                return fmt::format("{}array {} = {};\n{}", tab, var1, der, genera(g, true, d, tab, if_dentro, f));
+                return fmt::format("{}array {} = {};\n{}", tab, var1, der, genera(g, dentro, d, tab, if_dentro, f, nombre));
             }
         } else if (opcion == 4 && if_dentro < 2) {
             tab += "\t";
-            return fmt::format("{}if {} {{\n{}\n{}}}\n{}", arregla_tab(tab), d.genera_condicion(g), genera(g, true, d, tab, if_dentro + 1, f), arregla_tab(tab), genera(g, true, d, arregla_tab(tab), if_dentro, f));
+            return fmt::format("{}if {} {{\n{}\n{}}}\n{}", arregla_tab(tab), d.genera_condicion(g), genera(g, dentro, d, tab, if_dentro + 1, f, nombre), arregla_tab(tab), genera(g, dentro, d, arregla_tab(tab), if_dentro, f, nombre));
+        } else if(opcion == 5 && if_dentro < 2) {
+            tab += "\t";
+            return fmt::format("{}if {} {{\n{}\n{}}} else {{\n{}\n{}}}\n{}", arregla_tab(tab), d.genera_condicion(g), genera(g, dentro, d, tab, if_dentro + 1, f, nombre), arregla_tab(tab), genera(g, dentro, d, tab, if_dentro + 1, f, nombre), arregla_tab(tab), genera(g, dentro, d, arregla_tab(tab), if_dentro, f, nombre));
+        }else if (opcion == 7 && f.num.size() > 2) {
+            var1 = d.genera_id_var(g, 0);
+            if (g.rand() == 0) {
+                return fmt::format("{}number {} = {};\n{}", tab, var1, d.llama_func(g, f.num, "", nombre), genera(g, dentro, d, tab, if_dentro, f, nombre));
+            } else {
+                return fmt::format("{}number {} = {} {} {};\n{}", tab, var1, d.llama_func(g, f.num, "", nombre), genera_op_num(), d.llama_func(g, f.num, "", nombre), genera(g, dentro, d, tab, if_dentro, f, nombre));
+            }
+        } else if (opcion == 8 && f.arr.size() > 2) {
+            var1 = d.genera_id_var(g, 1);
+            int op_arr = g.rand() % 2;
+            if (d.v_arr.size() > 4) {
+                der = fmt::format("{} * {}", d.obten_id(g, var1, 1), d.llama_func(g, f.arr, "", nombre));
+            } else {
+                if (op_arr == 0) {
+                    der = fmt::format("{}", d.llama_func(g, f.arr, "", nombre));
+                } else {
+                    der = fmt::format("{} * {}", d.llama_func(g, f.arr, "", nombre), d.genera_arreglo(g));
+                }
+            }
+            return fmt::format("{}array {} = {};\n{}", tab, var1, der, genera(g, dentro, d, tab, if_dentro, f, nombre));
         } else {
-            return fmt::format("{}return {};", tab, d.genera_id_var(g, 0));
+            int op = g.rand() % 2, t = dentro - 1;
+            return fmt::format("{}return {};", tab, d.obten_id(g, "", t));
         }
     }
     std::string tipo = d.genera_tipo(g);
-    std::string nombre = d.genera_id_func(g, f);;
+    nombre = d.genera_id_func(g, f);
     std::vector<int> v;
     var1 = d.genera_parametros(g, v);
-    if(tipo[0] == 'n'){    
+    if (tipo[0] == 'n') {
         f.num[nombre] = v;
-    }else{        
+    } else {
         f.arr[nombre] = v;
     }
-    return fmt::format("function {}{}: {}{{\n{}\n}}\n", nombre, var1, tipo, genera(g,true, d, tab += "\t", if_dentro, f));    
+    return fmt::format("function {}{}: {}{{\n{}\n}}\n", nombre, var1, tipo, genera(g, (tipo[0] == 'n' ? 1 : 2), d, tab += "\t", if_dentro, f, nombre));
 }
 
 int main() {
@@ -85,7 +109,7 @@ int main() {
     for (int i = 0; i < n; ++i) {
         d.v_num.clear();
         d.v_arr.clear();
-        std::string s = genera(g, false, d, "", 0, f);
+        std::string s = genera(g, 0, d, "", 0, f, "");
         std::cout << s << '\n';
     }
 }
