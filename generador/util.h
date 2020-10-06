@@ -36,7 +36,7 @@ struct datos {
     std::vector<std::string> v_num;
     std::vector<std::string> v_arr;
     
-    std::string obten_id(std::string s, int t) {
+    std::string obten_id(const std::string& s, int t) {
         int tam_n = v_num.size();
         int tam_a = v_arr.size();
         std::string id;
@@ -53,7 +53,7 @@ struct datos {
         return id;
     }
 
-    std::string llama_func(const map_f& m, std::string s, std::string nombre) {
+    std::string llama_func(const map_f& m, const std::string& s, const std::string& nombre) {
         map_f::const_iterator ini;
         while (true) {
             int n = g.rand() % m.size();
