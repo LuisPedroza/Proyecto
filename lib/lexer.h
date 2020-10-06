@@ -86,11 +86,11 @@ namespace lib {
    };
 
    bool sigue_comentario_linea(char c){
-       return c != '\n';
+       return c != '\n' && c != EOF;
    }
 
    bool sigue_comentario_bloque(char c){
-       return c != '"';
+       return c != '"' && c != EOF;
    }
 
    bool inicia_id(char c){

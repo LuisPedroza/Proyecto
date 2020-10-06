@@ -18,7 +18,7 @@ std::string arregla_tab(std::string s) {
 std::string genera(int dentro, datos d, std::string tab, int if_dentro, funciones& f, std::string nombre) {
     std::string aux1, aux2;
     if (dentro != 0 && dentro != 3) {
-        int opcion = d.g.rand() % 4;
+        int opcion = d.g.rand() % 5;
         if (opcion == 0) {
             std::string var_n = d.genera_id_var(0);
             if (d.v_num.size() < 4) {
@@ -46,13 +46,18 @@ std::string genera(int dentro, datos d, std::string tab, int if_dentro, funcione
         } else if (opcion == 2 && if_dentro < 1) {
             tab += "\t";
             int op_if = d.g.rand() % 3;
+            d.cont_com += 1;
             if (op_if == 0) {
                 return fmt::format("{}if {} {{\n{}\n{}}}\n{}", arregla_tab(tab), d.genera_condicion(), genera(dentro, d, tab, if_dentro + 1, f, nombre), arregla_tab(tab), genera(dentro, d, arregla_tab(tab), if_dentro, f, nombre));
             } else if (op_if == 1) {
                 return fmt::format("{}if {} {{\n{}\n{}}} else {{\n{}\n{}}}\n{}", arregla_tab(tab), d.genera_condicion(), genera(dentro, d, tab, if_dentro + 1, f, nombre), arregla_tab(tab), genera(dentro, d, tab, if_dentro + 1, f, nombre), arregla_tab(tab), genera(dentro, d, arregla_tab(tab), if_dentro, f, nombre));
             } else {
-                return fmt::format("{}if {} {{\n{}\n{}}} else if {} {{\n{}\n{}}} else {{\n{}\n{}}}\n{}", arregla_tab(tab), d.genera_condicion(), genera(dentro, d, tab, if_dentro + 1, f, nombre), arregla_tab(tab), d.genera_condicion(), genera(dentro, d, tab, if_dentro + 1, f, nombre), arregla_tab(tab), genera(dentro, d, tab, if_dentro + 1, f, nombre), arregla_tab(tab), genera(dentro, d, arregla_tab(tab), if_dentro, f, nombre));
+                if_dentro += 1;
+                return fmt::format("{}if {} {{\n{}\n{}}} else {{\n{}\n{}}}\n{}", arregla_tab(tab), d.genera_condicion(), genera(dentro, d, tab, if_dentro + 1, f, nombre), arregla_tab(tab), genera(dentro, d, tab, if_dentro + 1, f, nombre), arregla_tab(tab), genera(dentro, d, arregla_tab(tab), if_dentro, f, nombre));
             }
+        } else if (opcion == 3 && d.cont_com < 2) {
+            d.cont_com += 1;
+            return fmt::format("{}{}\n{}", tab, d.genera_comentario(tab), genera(dentro, d, tab, if_dentro, f, nombre));
         } else {
             int op = d.g.rand() % 2, t = dentro - 1;
             return fmt::format("{}return {};", tab, d.obten_id("", t));
@@ -75,10 +80,8 @@ int main() {
     std::cin.tie(nullptr);
     std::cout.tie(nullptr);
 
-    srand(time(0));
-
     generador g;
-    datos d = {g};
+    datos d = {0, g};
     funciones f;
 
     int n;
@@ -87,10 +90,8 @@ int main() {
     for (int i = 0; i < n; ++i) {
         d.v_num.clear();
         d.v_arr.clear();
-        std::cout << genera(0, d, "", 0, f, "") << '\n';        
+        std::cout << genera(0, d, "", 0, f, "") << '\n';
     }
 
     std::cout << genera(3, d, "", 0, f, "") << '\n';
-
-
 }

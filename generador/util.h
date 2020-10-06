@@ -1,13 +1,13 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include <fmt/format.h>
+
+#include <ctime>
 #include <iterator>
 #include <random>
 #include <string>
 #include <unordered_map>
-#include <ctime>
-
-#include <fmt/format.h>  
 
 using map_f = std::unordered_map<std::string, std::vector<int>>;
 
@@ -16,7 +16,7 @@ struct funciones {
     map_f arr;
 };
 
-class generador {    
+class generador {
     std::mt19937 gen;
     std::uniform_int_distribution<> num;
 
@@ -32,23 +32,30 @@ class generador {
 };
 
 struct datos {
+    int cont_com;
     generador& g;
     std::vector<std::string> v_num;
     std::vector<std::string> v_arr;
-    
+
     std::string obten_id(const std::string& s, int t) {
-        int tam_n = v_num.size();
-        int tam_a = v_arr.size();
+        int tam = t == 0 ? v_num.size() : v_arr.size();
         std::string id;
-        while (true) {
+        int ind;
+        if (tam > 3) {
+            ind = g.rand() % tam;
             if (t == 0) {
-                id = (tam_n != 0 ? v_num[g.rand() % tam_n] : std::to_string(g.rand()));
+                if (v_num[ind] == s) {
+                    ind -= 1;
+                }
+                id = v_num[ind];
             } else {
-                id = (tam_a != 0 ? v_arr[g.rand() % tam_a] : genera_arreglo());
+                if (v_arr[ind] == s) {
+                    ind -= 1;
+                }
+                id = v_arr[ind];
             }
-            if (id != s) {
-                break;
-            }
+        } else {
+            id = (t == 0 ? std::to_string(g.rand()) : genera_arreglo());
         }
         return id;
     }
@@ -88,7 +95,7 @@ struct datos {
     }
 
     std::string genera_id_var(int t) {
-        std::string aux = fmt::format("{}_{}{}", genera_car(0), genera_car(1), genera_car(2));
+        std::string aux = fmt::format("{}{}_{}{}", genera_car(0), genera_car(0), genera_car(1), genera_car(2));
         t == 0 ? v_num.push_back(aux) : v_arr.push_back(aux);
         return aux;
     }
@@ -111,26 +118,26 @@ struct datos {
 
     std::string genera_var_num(const map_f& f, const std::string& nombre) {
         return (f.size() < 3 ? std::to_string(g.rand()) : (g.rand() % 2 == 0 ? llama_func(f, "", nombre) : std::to_string(g.rand())));
-    }    
+    }
 
     std::string genera_var_arr(const map_f& f, const std::string& nombre) {
         return (f.size() < 3 ? genera_arreglo() : (g.rand() % 2 == 0 ? llama_func(f, "", nombre) : genera_arreglo()));
     }
 
     std::string genera_var(const std::string& v, const map_f& f, const std::string& nombre, int t) {
-        if(f.size() < 3){
+        if (f.size() < 3) {
             return obten_id(v, t);
-        }else{
-            int op = g.rand() %3;
-            if(op == 0){
+        } else {
+            int op = g.rand() % 3;
+            if (op == 0) {
                 return llama_func(f, v, nombre);
-            }else if(op == 1){
+            } else if (op == 1) {
                 return obten_id(v, t);
-            }else{
+            } else {
                 return t == 0 ? std::to_string(g.rand()) : genera_arreglo();
             }
-        }                     
-    }    
+        }
+    }
 
     std::string genera_tipo() {
         return (g.rand() % 2 == 0 ? "number" : "array");
@@ -202,7 +209,7 @@ struct datos {
     }
 
     std::string genera_op_cond() {
-        switch (rand() % 6) {
+        switch (g.rand() % 6) {
             case 0:
                 return "=";
             case 1:
@@ -220,8 +227,28 @@ struct datos {
         }
     }
 
+    std::string genera_comentario(const std::string& tab) {
+        std::string comentario;
+        if (g.rand() % 2 == 0) {
+            comentario += "' ";
+            for (int i = 0; i < (g.rand() % 10 + 1); ++i) {
+                comentario += fmt::format("{}{}", "comentario", g.rand() % 2 == 0 ? " " : "\t");
+            }
+        } else {
+            comentario += "\"\n";
+            for (int i = 0; i < (g.rand() % 10 + 1); ++i) {
+                for (int j = 0; j < (g.rand() % 10 + 1); ++j) {
+                    comentario += fmt::format("{}{}{}", tab, "comentario", g.rand() % 2 == 0 ? " " : "\t");
+                }
+                comentario += "\n";
+            }
+            comentario += tab + "\"";
+        }
+        return comentario;
+    }
+
     std::string genera_op_num() {
-        switch (rand() % 7) {
+        switch (g.rand() % 7) {
             case 0:
                 return "+";
             case 1:
@@ -240,7 +267,6 @@ struct datos {
                 return "";
         }
     }
-
 };
 
 #endif
