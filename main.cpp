@@ -75,8 +75,9 @@ int main(int argc, char *argv[]) {
          if(debug){
             std::cout << "Arbol generado." << '\n';
             for(auto const& i : arbol){
-               std::cout << i << '\n';
+               std::cout << i;
             }
+            std::cout << '\n';
          }
       }catch(const std::pair<lib::token_anotada, const char*>& e){
          reporta_error(std::cout, archivo.data( ), archivo.data( ) + archivo.size( ), e);
@@ -84,11 +85,12 @@ int main(int argc, char *argv[]) {
    } else {
       lib::concurrent_buffer<char> archivo(tam_archivo + 1);
       lib::concurrent_buffer<lib::token_anotada> tokens(tam_archivo + 1);
-      //lib::concurrent_buffer<lib::declaracion_funcion> arbol((tam_archivo / 8) + 1);
+      lib::concurrent_buffer<lib::declaracion_funcion> arbol((tam_archivo / 8) + 1);
       try{
          tbb::parallel_invoke(
             [&] { lib::lee_archivo(entrada, archivo.resizable_end( )); },
-            [&] { lib::lexer(lib::concurrent_inspect_iterator(archivo), tokens.resizable_end( )); }            
+            [&] { lib::lexer(lib::concurrent_inspect_iterator(archivo), tokens.resizable_end( )); },
+            [&] { lib::parser(lib::concurrent_inspect_iterator(tokens), arbol.resizable_end( )); }            
          );
          //lib::lee_archivo(entrada, archivo.resizable_end( ));
          //lib::lexer(lib::concurrent_inspect_iterator(archivo), std::back_inserter(tokens));

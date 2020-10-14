@@ -70,8 +70,15 @@ namespace lib{
     }
 
     std::ostream& operator<<(std::ostream& os, const sentencia_if& s){
-        return os << "if " << *s.condicion << "{\n"; 
-
+        os << "if " << *s.condicion << "\n"; 
+        for(auto const& i : s.parte_si){
+            os << *i;
+        }
+        os << "else" << "\n"; 
+        for(auto const& i : s.parte_no){
+            os << *i;
+        }
+        return os;
     }
 
     std::ostream& operator<<(std::ostream& os, const sentencia_return& s){
@@ -97,7 +104,7 @@ namespace lib{
         for(auto const& i : d.sentencias){
             os << *i;
         }
-        return os;
+        return os << '\n';
     }
 
 } 
