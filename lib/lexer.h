@@ -67,7 +67,7 @@ namespace lib {
        {"*", MULTIPLICACION},
        {"//", PISO},
        {"/", DIVISION},
-       {"%", RESIDUO},       
+       {"%", RESIDUO},
        {"^", POTENCIA},
        {"#", TAMANYO_ARREGLO},
        {"=", IGUAL},
@@ -75,7 +75,7 @@ namespace lib {
        {"<=", MENOR_IGUAL},
        {"<", MENOR},
        {">=", MAYOR_IGUAL},
-       {">", MAYOR},       
+       {">", MAYOR},
        {"&", AND},
        {"|", OR},
        {"!", NOT},
@@ -118,7 +118,7 @@ namespace lib {
    template<typename FI, typename P>
    void esquiva(FI& iter, P pred){
        while(pred(*iter)){
-           iter++;
+           ++iter;
        }
    }
 

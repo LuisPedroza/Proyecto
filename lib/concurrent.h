@@ -3,10 +3,101 @@
 
 #include <atomic>
 #include <cstddef>
+#include <functional>
 #include <iterator>
 #include <memory>
 
 namespace lib {
+   template<typename IT>
+   class concurrent_inspect_iterator {
+      IT iter;
+      std::reference_wrapper<const std::atomic<IT>> fin;
+   public:
+      using value_type = const std::iterator_traits<IT>::value_type;
+      using pointer = const value_type*;
+      using reference = const value_type&;
+      using difference_type = std::ptrdiff_t;
+      using iterator_category = std::forward_iterator_tag;
+
+      concurrent_inspect_iterator(IT i, const std::atomic<IT>& f)
+      : iter(i), fin(f) {
+      }
+
+      value_type& operator*( ) const {
+         while (iter >= fin.get( )) {
+            continue;
+         }
+         return *iter;
+      }
+
+      pointer operator->( ) const {
+         return &operator*( );
+      }
+
+      concurrent_inspect_iterator& operator++( ) {
+         ++iter;
+         return *this;
+      }
+
+      concurrent_inspect_iterator operator++(int) {
+         auto temp = *this;
+         operator++( );
+         return temp;
+      }
+
+      operator pointer( ) const {
+         return iter;
+      }
+   };
+
+   template<typename IT>
+   class concurrent_output_iterator {
+      std::reference_wrapper<std::atomic<IT>> iter;
+   public:
+      using value_type = std::iterator_traits<IT>::value_type;
+      using pointer = value_type*;
+      using reference = value_type&;
+      using difference_type = std::ptrdiff_t;
+      using iterator_category = std::forward_iterator_tag;
+
+      concurrent_output_iterator(std::atomic<IT>& f)
+      : iter(f) {
+      }
+
+      value_type& operator*( ) {
+         return *iter.get( );
+      }
+
+      concurrent_output_iterator& operator++( ) {
+         ++iter.get( );
+         return *this;
+      }
+
+      auto operator++(int) {
+         struct postincrement_proxy {
+            concurrent_output_iterator& actual;
+         public:
+            ~postincrement_proxy( ) {
+               ++actual;
+            }
+
+            value_type& operator*( ) {
+               return *actual;
+            }
+         };
+         return postincrement_proxy(*this);
+      }
+
+      concurrent_output_iterator& operator+=(std::ptrdiff_t i) {
+         iter.get( ) += i;
+         return *this;
+      }
+
+      operator pointer( ) {
+         return iter.get( );
+      }
+   };
+
    template<typename T>
    class concurrent_buffer {
       std::unique_ptr<T[]> mem;
@@ -69,54 +160,12 @@ namespace lib {
          return mem.get( ) + size( );
       }
 
-      std::atomic<iterator>& resizable_end( ) {
-         return iter_fin;
+      auto output_iterator( ) {
+         return concurrent_output_iterator(iter_fin);
       }
 
-      const std::atomic<iterator>& resizable_end( ) const {
-         return iter_fin;
-      }
-   };
-
-   template<typename T>
-   class concurrent_inspect_iterator {
-      typename T::const_iterator iter;
-      const std::atomic<typename T::iterator>* fin;
-   public:
-      using value_type = const T::value_type;
-      using pointer = const value_type*;
-      using reference = const value_type&;
-      using difference_type = std::ptrdiff_t;
-      using iterator_category = std::forward_iterator_tag;
-
-      concurrent_inspect_iterator(const T& c)
-      : iter(c.begin( )), fin(&c.resizable_end( )) {
-      }
-
-      value_type& operator*( ) const {
-         while (iter >= *fin) {
-            continue;
-         }
-         return *iter;
-      }
-
-      pointer operator->( ) const {
-         return &operator*( );
-      }
-
-      concurrent_inspect_iterator& operator++( ) {
-         ++iter;
-         return *this;
-      }
-
-      concurrent_inspect_iterator operator++(int) {
-         auto temp = *this;
-         operator++( );
-         return temp;
-      }
-
-      operator const typename T::const_iterator( ) const {
-         return iter;
+      auto inspect_iterator( ) const {
+         return concurrent_inspect_iterator(begin( ), iter_fin);
       }
    };
 }
