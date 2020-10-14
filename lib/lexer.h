@@ -65,17 +65,17 @@ namespace lib {
        {"+", SUMA},
        {"-", RESTA},
        {"*", MULTIPLICACION},
-       {"/", DIVISION},
-       {"%", RESIDUO},
        {"//", PISO},
+       {"/", DIVISION},
+       {"%", RESIDUO},       
        {"^", POTENCIA},
        {"#", TAMANYO_ARREGLO},
        {"=", IGUAL},
        {"!=", DIFERENTE},
-       {"<", MENOR},
        {"<=", MENOR_IGUAL},
-       {">", MAYOR},
+       {"<", MENOR},
        {">=", MAYOR_IGUAL},
+       {">", MAYOR},       
        {"&", AND},
        {"|", OR},
        {"!", NOT},
@@ -119,9 +119,9 @@ namespace lib {
    }
 
    template<typename FI>
-   bool consume(const std::string_view& s, FI& iter){
+   bool consume_reservado(const std::string_view& s, FI& iter){
        auto res = std::mismatch(s.begin(), s.end(), iter);
-       if (res.first == s.end()) {
+       if (res.first == s.end() && (!inicia_id(*iter) || !sigue_id(*res.second))) {
           iter = res.second;
           return true;
        }
@@ -167,7 +167,7 @@ namespace lib {
                ++iter;
            }else{
                auto aux = std::find_if(reservado.begin(), reservado.end(), [&](const auto& x){
-                   return consume(x.first, iter);
+                   return consume_reservado (x.first, iter);
                });
                if(aux != reservado.end()){
                    *salida++ = token_anotada{aux->second, ini, iter};
