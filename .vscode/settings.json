@@ -62,6 +62,8 @@
         "iomanip": "cpp",
         "cinttypes": "cpp",
         "variant": "cpp",
-        "filesystem": "cpp"
+        "filesystem": "cpp",
+        "condition_variable": "cpp",
+        "shared_mutex": "cpp"
     }
 }

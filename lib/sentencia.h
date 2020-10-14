@@ -11,13 +11,7 @@ namespace lib{
     };
     sentencia::~sentencia(){
         return;
-    }
-
-    struct sentencia_return : sentencia{
-        std::unique_ptr<expresion> ex;
-
-        sentencia_return(std::unique_ptr<expresion>&& e): ex(std::move(e)){}
-    };
+    }    
 
     struct sentencia_declaracion : sentencia{
         const token_anotada* tipo;
@@ -33,6 +27,12 @@ namespace lib{
         std::vector<std::unique_ptr<sentencia>> parte_no;
         
         sentencia_if(std::unique_ptr<expresion>& cond, std::vector<std::unique_ptr<sentencia>>& si, std::vector<std::unique_ptr<sentencia>>& no): condicion(std::move(cond)), parte_si(std::move(si)), parte_no(std::move(no)){}
+    };
+
+    struct sentencia_return : sentencia{
+        std::unique_ptr<expresion> ex;
+
+        sentencia_return(std::unique_ptr<expresion>&& e): ex(std::move(e)){}
     };
 
     template<typename FI>

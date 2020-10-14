@@ -106,9 +106,13 @@ namespace lib {
    }
 
    struct token_anotada {
-       token tipo;
-       const char* ini;
-       const char* fin;
+        token tipo;
+        const char* ini;
+        const char* fin;
+
+        operator std::string_view() const{
+            return {ini, std::size_t(fin - ini)};
+        }
    };
 
    template<typename FI, typename P>

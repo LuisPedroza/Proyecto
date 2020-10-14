@@ -2,6 +2,7 @@
 #include "lib/concurrent.h"
 #include "lib/lexer.h"
 #include "lib/parser.h"
+#include "lib/debug.h"
 #include "tbb/parallel_invoke.h"
 #include <algorithm>
 #include <cstring>
@@ -71,18 +72,23 @@ int main(int argc, char *argv[]) {
             }
          }
          lib::parser(tokens.data(), std::back_inserter(arbol));
+         if(debug){
+            std::cout << "Arbol generado." << '\n';
+            for(auto const& i : arbol){
+               std::cout << i << '\n';
+            }
+         }
       }catch(const std::pair<lib::token_anotada, const char*>& e){
          reporta_error(std::cout, archivo.data( ), archivo.data( ) + archivo.size( ), e);
       }
    } else {
       lib::concurrent_buffer<char> archivo(tam_archivo + 1);
       lib::concurrent_buffer<lib::token_anotada> tokens(tam_archivo + 1);
-      lib::concurrent_buffer<lib::declaracion_funcion> arbol((tam_archivo / 8) + 1);
+      //lib::concurrent_buffer<lib::declaracion_funcion> arbol((tam_archivo / 8) + 1);
       try{
          tbb::parallel_invoke(
             [&] { lib::lee_archivo(entrada, archivo.resizable_end( )); },
-            [&] { lib::lexer(lib::concurrent_inspect_iterator(archivo), tokens.resizable_end( )); },
-            [&] { lib::parser(lib::concurrent_inspect_iterator(tokens), arbol.resizable_end()); }
+            [&] { lib::lexer(lib::concurrent_inspect_iterator(archivo), tokens.resizable_end( )); }            
          );
          //lib::lee_archivo(entrada, archivo.resizable_end( ));
          //lib::lexer(lib::concurrent_inspect_iterator(archivo), std::back_inserter(tokens));
