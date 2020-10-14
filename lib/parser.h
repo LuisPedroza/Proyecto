@@ -2,11 +2,10 @@
 #define LIB_PARSER_H
 
 #include "sentencia.h"
-#include <vector> 
+#include <vector>
 #include <memory>
 
 namespace lib{
-
     struct declaracion_funcion {
         struct parametro {
             const token_anotada* tipo;
@@ -22,15 +21,14 @@ namespace lib{
     template<typename FI>
     std::vector<declaracion_funcion::parametro> parsea_parametros(FI& iter){
         std::vector<declaracion_funcion::parametro> p;
-        while(iter->tipo != PARENTESIS_DER){
-            auto tipo = espera(iter, es_tipo, "Se esperaba un tipo");
-            auto nombre = espera(iter, IDENTIFICADOR, "Se esperaba un identificador");            
+        while(es_tipo(iter->tipo)){
+            auto tipo = espera(iter, es_tipo);
+            auto nombre = espera(iter, IDENTIFICADOR, "Se esperaba un identificador");
             p.push_back({tipo, nombre});
-            if(iter->tipo == COMA){
-                espera(iter, COMA);
-            }else{
-                continue;
+            if(iter->tipo != COMA){
+                break;
             }
+            espera(iter, COMA);
         }
         return p;
     }
@@ -38,7 +36,7 @@ namespace lib{
     template<typename FI>
     declaracion_funcion parsea_funcion(FI& iter){
         espera(iter, FUNCION);
-        auto nombre = espera(iter, es_funcion);                        
+        auto nombre = espera(iter, es_funcion);
         espera(iter, PARENTESIS_IZQ);
         auto parametros = parsea_parametros(iter);
         espera(iter, PARENTESIS_DER);
@@ -51,7 +49,6 @@ namespace lib{
         }
         espera(iter, LLAVE_DER);
         return declaracion_funcion{nombre, parametros, retorno, std::move(sentencias)};
-        
     }
 
     template<typename FI, typename OI>
@@ -59,8 +56,8 @@ namespace lib{
         while(iter->tipo != FIN_ARCHIVO){
             *salida++ = parsea_funcion(iter);
         }
+        *salida++ = declaracion_funcion{ };           // el equivalente de FIN_ARCHIVO pero para declaraciones; será útil tenerlo en el semántico
     }
-
 };
 
 #endif

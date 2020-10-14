@@ -5,12 +5,11 @@
 #include<memory>
 
 namespace lib{
-
     struct expresion{
         virtual ~expresion() = 0;
     };
     expresion::~expresion(){
-        return;        
+        return;
     }
 
     struct expresion_terminal : expresion{
@@ -31,14 +30,14 @@ namespace lib{
         const token_anotada* operador;
         std::unique_ptr<expresion> der;
 
-        expresion_op_binario(std::unique_ptr<expresion>&& i, const token_anotada* op, std::unique_ptr<expresion>&& d): izq(std::move(i)), operador(op), der(std::move(d)){} 
+        expresion_op_binario(std::unique_ptr<expresion>&& i, const token_anotada* op, std::unique_ptr<expresion>&& d): izq(std::move(i)), operador(op), der(std::move(d)){}
     };
 
     struct expresion_parentesis_posfijo : expresion{
         std::unique_ptr<expresion> func;
         std::vector<std::unique_ptr<expresion>> parametros;
 
-        expresion_parentesis_posfijo(std::unique_ptr<expresion> f, std::vector<std::unique_ptr<expresion>>&& p): func(std::move(f)), parametros(std::move(p)){}
+        expresion_parentesis_posfijo(std::unique_ptr<expresion>&& f, std::vector<std::unique_ptr<expresion>>&& p): func(std::move(f)), parametros(std::move(p)){}
     };
 
     struct expresion_corchetes_posfijo: expresion{
@@ -55,24 +54,23 @@ namespace lib{
 
     template<typename FI>
     std::unique_ptr<expresion> parsea_expresion(FI& iter);
-    
+
     template<typename FI>
     std::unique_ptr<expresion> parsea_expresion_primaria(FI& iter){
         if(es_terminal(iter->tipo)){
             return std::make_unique<expresion_terminal>(iter++);
         }else if(iter->tipo == PARENTESIS_IZQ){
-            ++iter;
-            std::unique_ptr<expresion> ex = parsea_expresion(iter);
+            std::unique_ptr<expresion> ex = parsea_expresion(++iter);
             espera(iter, PARENTESIS_DER);
             return ex;
         }else{
-            espera(iter, CORCHETE_IZQ);
             std::vector<std::unique_ptr<expresion>> elem;
+            espera(iter, CORCHETE_IZQ);
             while(iter->tipo != CORCHETE_DER){
                 elem.push_back(parsea_expresion(iter));
-                if(iter->tipo == COMA){
-                        iter++;
-                    }
+                if(iter->tipo != CORCHETE_DER){
+                   espera(iter, COMA);
+                }
             }
             espera(iter, CORCHETE_DER);
             return std::make_unique<expresion_arreglo>(std::move(elem));
@@ -90,15 +88,15 @@ namespace lib{
             if(iter->tipo == PARENTESIS_IZQ){
                 ++iter;
                 std::vector<std::unique_ptr<expresion>> parametros;
-                while(iter->tipo != PARENTESIS_DER){            
+                while(iter->tipo != PARENTESIS_DER){
                     parametros.push_back(parsea_expresion(iter));
-                    if(iter->tipo == COMA){
-                        iter++;
+                    if(iter->tipo != PARENTESIS_DER){
+                        espera(iter, COMA);
                     }
                 }
                 espera(iter, PARENTESIS_DER);
                 ex = std::make_unique<expresion_parentesis_posfijo>(std::move(ex), std::move(parametros));
-            }else{
+            }else if(iter->tipo == CORCHETE_IZQ){
                 ++iter;
                 auto izq = parsea_expresion(iter);
                 espera(iter, SLICE);
@@ -124,8 +122,6 @@ namespace lib{
     std::unique_ptr<expresion> parsea_expresion(FI& iter){
         return parsea_expresion_n_aria(iter, 0);
     }
-
-
 };
 
 #endif

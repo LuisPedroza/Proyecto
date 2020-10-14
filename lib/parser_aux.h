@@ -4,7 +4,6 @@
 #include "lexer.h"
 
 namespace lib{
-
     template<typename FI, typename P>
     FI espera(FI& iter, P pred, const char* mensaje = ""){
         if(!pred(iter->tipo)){
@@ -35,18 +34,18 @@ namespace lib{
             return 6;
         }else if(t == POTENCIA){
             return 7;
-        }     
-        return 0;   
+        }
+        return 0;
     }
 
     enum asociatividad{
-        DERECHA,
+        DERECHA = 0,
         IZQUIERDA
     };
 
     int asociatividad(token t) {
-        return IZQUIERDA;         // 1 para izquierda, 0 para derecha
-    }   
+        return (t == POTENCIA ? DERECHA : IZQUIERDA);
+    }
 
     bool es_operador_prefijo(token t){
         return t == TAMANYO_ARREGLO || t == RESTA || t == NOT;
@@ -79,7 +78,6 @@ namespace lib{
     bool es_funcion(token t){
         return t == IDENTIFICADOR || t == MAIN;
     }
-
 };
 
 #endif

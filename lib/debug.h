@@ -6,7 +6,7 @@
 #include <string_view>
 
 namespace lib{
-    
+
     std::ostream& operator<<(std::ostream& os, std::string_view s){
         return os.write(s.begin(), s.size());
     }
@@ -62,6 +62,7 @@ namespace lib{
         }else if(typeid(e) == typeid(expresion_arreglo)){
             return os << dynamic_cast<const expresion_arreglo&>(e);
         }
+        return os;
     }
 
     std::ostream& operator<<(std::ostream& os, const sentencia& s);
@@ -70,11 +71,11 @@ namespace lib{
     }
 
     std::ostream& operator<<(std::ostream& os, const sentencia_if& s){
-        os << "if " << *s.condicion << "\n"; 
+        os << "if " << *s.condicion << "\n";
         for(auto const& i : s.parte_si){
             os << *i;
         }
-        os << "else" << "\n"; 
+        os << "else" << "\n";
         for(auto const& i : s.parte_no){
             os << *i;
         }
@@ -93,21 +94,25 @@ namespace lib{
         }else if(typeid(s) == typeid(sentencia_return)){
             return os << dynamic_cast<const sentencia_return&>(s);
         }
+        return os;
     }
 
     std::ostream& operator<<(std::ostream& os, const declaracion_funcion& d){
-        os << "function " << *d.nombre << '(';
-        for(auto const& i : d.parametros){
-            os << *i.tipo << ' ' << *i.nombre << ',';
+        if (d.nombre != nullptr) {
+            os << "function " << *d.nombre << '(';
+            for(auto const& i : d.parametros){
+                os << *i.tipo << ' ' << *i.nombre << ',';
+            }
+            os << ") : " << *d.retorno << '\n';
+            for(auto const& i : d.sentencias){
+                os << *i;
+            }
+            os << '\n';
         }
-        os << ") : " << *d.retorno << '\n';
-        for(auto const& i : d.sentencias){
-            os << *i;
-        }
-        return os << '\n';
+        return os;
     }
 
-} 
+}
 
 
 #endif
