@@ -101,7 +101,7 @@ namespace lib {
          return temp;
       }
 
-      operator pointer( ) const {
+      operator IT( ) const {
          return iter;
       }
    };
