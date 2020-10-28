@@ -2,6 +2,7 @@
 #include "lib/concurrent.h"
 #include "lib/lexer.h"
 #include "lib/parser.h"
+#include "lib/semantico.h"
 #include "lib/debug.h"
 #include "tbb/parallel_invoke.h"
 #include <algorithm>
@@ -53,6 +54,7 @@ int main(int argc, char *argv[]) {
       std::vector<char> archivo(tam_archivo);
       std::vector<lib::token_anotada> tokens;
       std::vector<lib::declaracion_funcion> arbol;
+      std::map<std::string_view, lib::datos_funcion> funciones;
       try{
          lib::lee_archivo(entrada, archivo.data( ));
          if (debug) {
@@ -64,7 +66,7 @@ int main(int argc, char *argv[]) {
          lib::lexer(archivo.data( ), std::back_inserter(tokens));
          if (debug) {
             std::cout << "Tokens leidos." << '\n';
-            for(auto i : tokens){
+            for(auto i : tokens){               
                while(i.ini != i.fin){
                   std::cout << *i.ini++;
                }
@@ -78,7 +80,8 @@ int main(int argc, char *argv[]) {
                std::cout << i;
             }
             std::cout << '\n';
-         }
+         }         
+         lib::analiza_funcion(arbol.data(), funciones);
       }catch(const std::pair<lib::token_anotada, const char*>& e){
          reporta_error(std::cout, archivo.data( ), archivo.data( ) + archivo.size( ), e);
       }

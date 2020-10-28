@@ -15,7 +15,7 @@ namespace lib{
         const token_anotada* nombre;
         std::vector<parametro> parametros;
         const token_anotada* retorno;
-        std::vector<std::unique_ptr<sentencia>> sentencias;
+        std::vector<std::unique_ptr<sentencia>> sentencias;        
     };
 
     template<typename FI>
@@ -56,8 +56,9 @@ namespace lib{
         while(iter->tipo != FIN_ARCHIVO){
             *salida++ = parsea_funcion(iter);
         }
-        *salida++ = declaracion_funcion{ };           // el equivalente de FIN_ARCHIVO pero para declaraciones; será útil tenerlo en el semántico
+        *salida++ = declaracion_funcion{ };           // el equivalente de FIN_ARCHIVO pero para declaraciones; serï¿½ ï¿½til tenerlo en el semï¿½ntico
     }
 };
 
 #endif
+ 

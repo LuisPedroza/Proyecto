@@ -1,97 +1,20 @@
-function nof_OKM_957(number RD_i1,number VQ_g8): array{
-	' comentario	comentario	
-	' comentario comentario	comentario 
-	return [570840,106509,366545,536990,623332,815912,916539,976578];
+function hgh_OBR_376(array VB_p0,array MU_b7,array CR_l8,array RJ_o8,number WA_j6): array{
+	array SB_x6 = [451883,97617,485915,253728,5487] * [563339,376980,892502,754244,572590,730964];
+	array SE_r2 = SB_x6 - RJ_o8;
+	number a = 54 * -54;
+	return MU_b7;
 }
 
-function att_OGM_681(number QX_b0,number OJ_i0): array{
-	number XW_x2 = 699362;
-	if 970138 <= 50768 | 756215 >= 28552 {
-		return [82098,960609,98157,61352,33448];
-	}
-	return [333375,780755,407021,814426,753363,848111,146640,554046,597272];
+function hgh_OBR_376(array VB_p0,array MU_b7,array CR_l8,array RJ_o8,number WA_j6): array{
+	array SB_x6 = [451883,97617,485915,253728,5487] * [563339,376980,892502,754244,572590,730964];
+	array SE_r2 = SB_x6 - RJ_o8;
+	number a = 54 * -54;
+	return MU_b7;
 }
 
-function sxr_VNJ_904(array LW_s7): array{
-	"
-	comentario 	comentario 	comentario 
-	comentario 	comentario		comentario		comentario 
-	comentario		comentario	
-	comentario		comentario 
-	comentario		comentario 	comentario 	comentario	
-	comentario		comentario		comentario 
-	"
-	array QA_o2 = [806184,546597,555964,426303,483642,871937,671008,240261];
-	"
-	comentario	
-	comentario		comentario 	comentario 
-	comentario 	comentario		comentario 	comentario	
-	"
-	number MJ_b3 = 968567;
-	return [648880,965013,329876,906525,577311];
+function hgh_OBR_376(array VB_p0,array MU_b7,array CR_l8,array RJ_o8,number WA_j6): array{
+	array SB_x6 = [451883,97617,485915,253728,5487] * [563339,376980,892502,754244,572590,730964];
+	array SE_r2 = SB_x6 - RJ_o8;
+	number a = 54 * -54;
+	return MU_b7;
 }
-
-function kjn_VPA_707(array RP_e4,array BX_c9,array TI_q3): number{
-	"
-	comentario 	comentario		comentario 
-	comentario 	comentario		comentario	
-	comentario	
-	comentario 	comentario 	comentario 
-	comentario		comentario 	comentario 	comentario 	comentario	
-	comentario		comentario 	comentario 	comentario 	comentario 
-	"
-	"
-	comentario 	comentario		comentario 	comentario	
-	"
-	number AR_a9 = 4328;
-	number MT_a1 = 548582;
-	array KL_p3 = [385432,145501,420551,631156,666272,780363] * [618401,488265,209377,53277,327421,252475,368613,831743,118451];
-	if KL_p3(1) <= 721293 {
-		return 515766;
-	} else {
-		return 601164;
-	}
-	return 867431;
-}
-
-function plf_GKJ_676(array MP_c3,number OC_i8,number KV_a0,number FY_m5,number YS_t4): array{
-	number QO_t1 = FY_m5 * FY_m5;
-	array KR_h2 = nof_OKM_957(YS_t4,KV_a0);
-	if 644345 >= [420668,517433,235307,306303,488009,299994,244228,937121](3) | [67392,579744,571230,690419,281398,19704,665031,371200](1) >= #[632596,773486,587388,59854,304262,111130] & 631813 = QO_t1 {
-		return [32680,413564,758855,500661,620077,388961,187723,174950];
-	}
-	number LH_i9 = QO_t1 // OC_i8;
-	if #[186979,299826,880867,21656,654991,772898,80079,909786] >= [273216,145665,739608,120748,481593,236124,202539,532598](4) & #[169029,725855,200312,682820,599721,222637] <= FY_m5 {
-		return [681003,271259,318515,813857,699926,503188,942318,416252];
-	}
-	return [241571,462867,508041,699339,828675,402667,271833];
-}
-
-function main(array DT_c5,number IA_i2,number TT_t0,number WP_p8): number{
-	array YH_d7 = sxr_VNJ_904([743234,944006,519574,345498,321011]);
-	if #[725900,49994,987956,97950,127929,129235,476330,295827,222449] >= [640986,936811,279584,228869,643671,266641,797148,148838](5) | 540918 > [597749,514071,852166,41004,168727,900293,162299](1) {
-		' comentario comentario	
-		array TY_j1 = [482347,591649,272215,40900,841262,135496,724354];
-		number JT_p9 = WP_p8 ^ TT_t0;
-		number OS_g7 = JT_p9 * JT_p9;
-		array QL_m1 = DT_c5[0..4];
-		number AS_b9 = IA_i2 - TT_t0;
-		return IA_i2;
-	} else {
-		number MY_a6 = TT_t0 // TT_t0;
-		array HH_c7 = sxr_VNJ_904([436688,656645,513741,92564,269282,507299,870814]);
-		number FB_h9 = IA_i2 % IA_i2;
-		array OJ_r2 = sxr_VNJ_904(HH_c7)[0..2];
-		"
-		comentario			comentario			comentario 
-		comentario			comentario			comentario			comentario			comentario	
-		comentario			comentario 		comentario	
-		"
-		number FV_h1 = TT_t0 // TT_t0;
-		array AN_w9 = [373045,835245,377861,179936,934612,987317,41467][0..2];
-		return IA_i2;
-	}
-	array NI_h6 = sxr_VNJ_904([316308,292765,362284,430682,692091]);
-	return 904090;
-}
-

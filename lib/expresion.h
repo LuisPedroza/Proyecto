@@ -7,6 +7,7 @@
 namespace lib{
     struct expresion{
         virtual ~expresion() = 0;
+        virtual const token_anotada* get_token() const = 0;
     };
     expresion::~expresion(){
         return;
@@ -16,6 +17,10 @@ namespace lib{
         const token_anotada* t;
 
         expresion_terminal(const token_anotada* tp): t(tp){}
+
+        const token_anotada* get_token() const {
+            return t;
+        }
     };
 
     struct expresion_op_prefijo: expresion{
@@ -23,6 +28,10 @@ namespace lib{
         std::unique_ptr<expresion> sobre;
 
         expresion_op_prefijo(const token_anotada* op, std::unique_ptr<expresion>&& s): operador(op), sobre(std::move(s)){}
+
+        const token_anotada* get_token() const {
+            return operador;
+        }
     };
 
     struct expresion_op_binario : expresion{
@@ -31,6 +40,14 @@ namespace lib{
         std::unique_ptr<expresion> der;
 
         expresion_op_binario(std::unique_ptr<expresion>&& i, const token_anotada* op, std::unique_ptr<expresion>&& d): izq(std::move(i)), operador(op), der(std::move(d)){}
+
+        const token_anotada* get_token() const {
+            return operador;
+        }
+
+        const token_anotada* get_token(int lado) const {
+            return (lado == 0 ? izq->get_token() : der->get_token());
+        }
     };
 
     struct expresion_parentesis_posfijo : expresion{
@@ -38,18 +55,52 @@ namespace lib{
         std::vector<std::unique_ptr<expresion>> parametros;
 
         expresion_parentesis_posfijo(std::unique_ptr<expresion>&& f, std::vector<std::unique_ptr<expresion>>&& p): func(std::move(f)), parametros(std::move(p)){}
+
+        const token_anotada* get_token() const {
+            return func->get_token();
+        }
+
+        const token_anotada* get_token(int ind) const {
+            auto ini = parametros.begin();
+            ini += ind;
+            return (*ini)->get_token();
+        }
     };
 
     struct expresion_corchetes_posfijo: expresion{
         std::unique_ptr<expresion> ex, izq, der;
 
         expresion_corchetes_posfijo(std::unique_ptr<expresion>&& e, std::unique_ptr<expresion>&& i, std::unique_ptr<expresion>&& d): ex(std::move(e)), izq(std::move(i)), der(std::move(d)){}
+
+        const token_anotada* get_token() const{
+            return nullptr;
+        }
+
+        const token_anotada* get_token(int op) const {
+            if(op == 0){
+                return ex->get_token();
+            }else if(op == 1){
+                return izq->get_token();
+            }else{
+                return der->get_token();
+            }
+        }
     };
 
     struct expresion_arreglo : expresion{
         std::vector<std::unique_ptr<expresion>> elementos;
 
         expresion_arreglo(std::vector<std::unique_ptr<expresion>>&& e) : elementos(std::move(e)){}
+
+        const token_anotada* get_token() const{
+            return nullptr;
+        }
+
+        const token_anotada* get_token(int ind) const {
+            auto ini = elementos.begin();
+            std::advance(ini, ind);
+            return (*ini)->get_token();
+        }
     };
 
     template<typename FI>

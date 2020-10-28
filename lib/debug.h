@@ -25,7 +25,10 @@ namespace lib{
     }
 
     std::ostream& operator<<(std::ostream& os, const expresion_op_binario& e){
-        return os << *e.izq << *e.operador << *e.der;
+        os << "Izq\t" << *e.izq << '\n';
+        os << "Op\t" << *e.operador << '\n';
+        os << "Der\t" << *e.der << '\n';
+        return os;
     }
 
     std::ostream& operator<<(std::ostream& os, const expresion_parentesis_posfijo& e){
@@ -52,13 +55,13 @@ namespace lib{
         if(typeid(e) == typeid(expresion_terminal)){
             return os << dynamic_cast<const expresion_terminal&>(e);
         }else if(typeid(e) == typeid(expresion_op_prefijo)){
-            return os << dynamic_cast<const expresion_op_prefijo&>(e);
+            return os << "Expresion Operador Prefijo\n" << dynamic_cast<const expresion_op_prefijo&>(e);
         }else if(typeid(e) == typeid(expresion_op_binario)){
-            return os << dynamic_cast<const expresion_op_binario&>(e);
+            return os << "Expresion Operador Binario\n" << dynamic_cast<const expresion_op_binario&>(e);
         }else if(typeid(e) == typeid(expresion_parentesis_posfijo)){
-            return os << dynamic_cast<const expresion_parentesis_posfijo&>(e);
+            return os << "Expresion Parentesis Posfijo\n" << dynamic_cast<const expresion_parentesis_posfijo&>(e);
         }else if(typeid(e) == typeid(expresion_corchetes_posfijo)){
-            return os << dynamic_cast<const expresion_corchetes_posfijo&>(e);
+            return os << "Expresion Corchetes Posfijo\n" << dynamic_cast<const expresion_corchetes_posfijo&>(e);
         }else if(typeid(e) == typeid(expresion_arreglo)){
             return os << dynamic_cast<const expresion_arreglo&>(e);
         }
