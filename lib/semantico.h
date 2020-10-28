@@ -6,6 +6,7 @@
 #include <string_view>
 #include <vector>
 #include <type_traits> 
+#include <iostream>
 
 #include "lexer.h"
 #include "parser.h"
@@ -34,20 +35,23 @@ namespace lib {
     tipo_expresion analiza_expresion(const expresion& nodo, funciones& f, ambitos& a, const token& retorno);
     tipo_expresion analiza_expresion_terminal(const expresion_terminal& nodo, funciones& f, ambitos& a, const token& retorno) {
         if (nodo.t->tipo == IDENTIFICADOR) {
-            bool declarada = false;
+            bool declarada_v = false;
             std::map<std::string_view, token>::iterator it;
             for (auto& m : a) {
                 it = m.find(*nodo.t);
                 if (it != m.end()) {
-                    declarada = true;
+                    declarada_v = true;
                     break;
                 }
             }
-            espera(declarada, "Variable no declarada.", nodo.get_token());
-            return tipo_expresion{it->second};
-        } else if (nodo.t->tipo == FUNCION) {
-            espera(f.count(*nodo.t) != 0, "Funcion no declarada.", nodo.get_token());
-            return tipo_expresion{FUNCION, *nodo.t};
+            bool declarada_f = f.count(*nodo.t) != 0;
+            espera(declarada_v || declarada_f, "Variable no declarada.", nodo.get_token());                        
+            if(declarada_f){
+                return tipo_expresion{FUNCION, *nodo.t};
+            }
+            if(declarada_v){
+                return tipo_expresion{it->second};
+            }
         } else {
             return tipo_expresion{NUMERO};
         }
@@ -60,12 +64,11 @@ namespace lib {
             espera(t.tipo == ARREGLO, "El operador se debe usar sobre un arreglo.", nodo.get_token());
             return tipo_expresion{NUMERO};
         } else if (tipo == RESTA) {
-            espera(t.tipo == LITERAL_NUMERICA, "El operador se debe usar sobre una literal numerica.", nodo.get_token());
-            //Literal numerica ??
+            espera(t.tipo == NUMERO, "El operador se debe usar sobre un tipo numerico.", nodo.get_token());
             return tipo_expresion{NUMERO};
         } else {
-            //???????????????????
-            return tipo_expresion{NOT};
+            espera(t.tipo == NUMERO, "El operador se debe usar sobre un tipo numerico.", nodo.get_token());
+            return tipo_expresion{NUMERO};
         }
     }
 
@@ -93,21 +96,22 @@ namespace lib {
         tipo_expresion t = analiza_expresion(*nodo.func, f, a, retorno);
         auto ini_a = nodo.parametros.begin();
         auto fin_a = nodo.parametros.end();
+        int tam =  fin_a - ini_a;
         if (t.tipo == FUNCION) {
             auto ini_p = f[t.f].parametros.begin();
-            auto fin_p = f[t.f].parametros.end();                        
+            auto fin_p = f[t.f].parametros.end();
             espera(((fin_p - ini_p) == (fin_a - ini_a)), "Numero incorrecto de argumentos.", nodo.get_token());
             while (ini_p != fin_p) {
-                tipo_expresion e = analiza_expresion(**ini_a, f, a, retorno);                
-                espera((*ini_p == e.tipo), "Tipo de argumento incorrecto.", nodo.get_token(fin_a - ini_a));
+                tipo_expresion e = analiza_expresion(**ini_a, f, a, retorno);
+                espera((*ini_p == e.tipo), "Tipo de argumento incorrecto.", nodo.get_token(tam - (fin_a - ini_a)));
                 ini_a++;
                 ini_p++;
             }
             return tipo_expresion{f[t.f].retorno};
-        } else {
-            espera(((fin_a - ini_a) == 1), "Error al indicar el tamaño del arreglo.", nodo.get_token(fin_a - ini_a));
+        } else {            
+            espera(tam == 1, "Error al indicar el tamaño del arreglo.", nodo.get_token(tam - (fin_a - ini_a)));
             tipo_expresion e = analiza_expresion(**ini_a, f, a, retorno);
-            espera(es_terminal(e.tipo), "Tamaño de arreglo no valido.", nodo.get_token(fin_a - ini_a));
+            espera(e.tipo == NUMERO, "Tamaño de arreglo no valido.", nodo.get_token(tam - (fin_a - ini_a)));
             return tipo_expresion{NUMERO};
         }
     }
@@ -116,18 +120,22 @@ namespace lib {
         tipo_expresion ex = analiza_expresion(*nodo.ex, f, a, retorno);
         espera(ex.tipo == ARREGLO, "La variable debe ser de tipo array.", nodo.get_token(0));
         tipo_expresion izq = analiza_expresion(*nodo.izq, f, a, retorno);
-        espera(es_terminal(izq.tipo), "No es terminal.", nodo.get_token(1));
-        tipo_expresion der = analiza_expresion(*nodo.der, f, a, retorno);
-        espera(es_terminal(der.tipo), "No es terminal.", nodo.get_token(2));
+        espera(izq.tipo == NUMERO, "No es terminal.", nodo.get_token(1));
+        if(nodo.der != nullptr){
+            tipo_expresion der = analiza_expresion(*nodo.der, f, a, retorno);
+            espera(der.tipo == NUMERO, "No es terminal.", nodo.get_token(2));
+        }
         return tipo_expresion{ARREGLO};
     }
 
     tipo_expresion analiza_expresion_arreglo(const expresion_arreglo& nodo, funciones& f, ambitos& a, const token& retorno) {
         auto ini = nodo.elementos.begin();
         auto fin = nodo.elementos.end();
+        int tam = fin - ini;
         while (ini != fin) {
-            tipo_expresion t = analiza_expresion(**ini, f, a, retorno);            
-            espera(es_terminal(t.tipo), "No es terminal.", nodo.get_token(fin - ini));
+            tipo_expresion t = analiza_expresion(**ini, f, a, retorno);
+            espera(t.tipo == NUMERO, "No es terminal.", nodo.get_token(tam - (fin - ini)));
+            ini++;
         }
         return tipo_expresion{ARREGLO};
     }
@@ -157,6 +165,21 @@ namespace lib {
     }
 
     void analiza_if(const sentencia_if& nodo, funciones& f, ambitos& a, const token& retorno) {
+        tipo_expresion e_cond = analiza_expresion(*nodo.condicion, f, a, retorno);
+        espera(e_cond.tipo == NUMERO, "Condicion no valida.", nodo.condicion->get_token());
+        tipo_expresion e_si, e_no;
+        std::map<std::string_view, token> m_si;
+        a.push_back(m_si);
+        for(auto& s : nodo.parte_si){
+            analiza_sentencia(*s, f, a, retorno);
+        }
+        if(!nodo.parte_no.empty()){
+            std::map<std::string_view, token> m_no;
+            a.push_back(m_no);
+            for(auto& s : nodo.parte_no){
+                analiza_sentencia(*s, f, a, retorno);
+            }
+        }
     }
 
     void analiza_return(const sentencia_return& nodo, funciones& f, ambitos& a, const token& retorno) {
@@ -176,7 +199,7 @@ namespace lib {
 
     template <typename FI>
     void analiza_funcion(FI iter, funciones& f) {
-        while(!std::is_empty<declaracion_funcion>::value){
+        while(iter->nombre != nullptr){
             std::vector<token> params;
             std::map<std::string_view, token> ap;
             for (auto p : iter->parametros) {

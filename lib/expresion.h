@@ -93,7 +93,7 @@ namespace lib{
         expresion_arreglo(std::vector<std::unique_ptr<expresion>>&& e) : elementos(std::move(e)){}
 
         const token_anotada* get_token() const{
-            return nullptr;
+            return (*elementos.begin())->get_token();
         }
 
         const token_anotada* get_token(int ind) const {
@@ -150,10 +150,15 @@ namespace lib{
             }else if(iter->tipo == CORCHETE_IZQ){
                 ++iter;
                 auto izq = parsea_expresion(iter);
-                espera(iter, SLICE);
-                auto der = parsea_expresion(iter);
-                espera(iter, CORCHETE_DER);
-                ex = std::make_unique<expresion_corchetes_posfijo>(std::move(ex), std::move(izq), std::move(der));
+                if(iter->tipo == CORCHETE_DER){
+                    ++iter;
+                    ex = std::make_unique<expresion_corchetes_posfijo>(std::move(ex), std::move(izq), nullptr);
+                }else{
+                    espera(iter, SLICE);
+                    auto der = parsea_expresion(iter);
+                    espera(iter, CORCHETE_DER);
+                    ex = std::make_unique<expresion_corchetes_posfijo>(std::move(ex), std::move(izq), std::move(der));
+                }
             }
         }
         return ex;
