@@ -3,3 +3,5 @@
 *.out
 .vscode/
 /generador/fmt
+test_22mb.txt
+debug.txt

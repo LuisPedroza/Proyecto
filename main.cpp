@@ -51,7 +51,7 @@ int main(int argc, char *argv[]) {
 
    auto t0 = std::chrono::high_resolution_clock::now( );
    if (secuencial) {
-      std::vector<char> archivo(tam_archivo);
+      std::vector<char> archivo(tam_archivo + 1);
       std::vector<lib::token_anotada> tokens;
       std::vector<lib::declaracion_funcion> arbol;
       std::map<std::string_view, lib::datos_funcion> funciones;
@@ -95,8 +95,6 @@ int main(int argc, char *argv[]) {
             [&] { lib::lexer(archivo.inspect_iterator( ), tokens.output_iterator( )); },
             [&] { lib::parser(tokens.inspect_iterator( ), arbol.output_iterator( )); }
          );
-         //lib::lee_archivo(entrada, archivo.resizable_end( ));
-         //lib::lexer(lib::concurrent_inspect_iterator(archivo), std::back_inserter(tokens));
       }catch(const std::pair<lib::token_anotada, const char*>& e){
          reporta_error(std::cout, archivo.begin( ), archivo.end( ), e);
       }
