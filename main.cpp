@@ -89,11 +89,13 @@ int main(int argc, char *argv[]) {
       lib::concurrent_buffer<char> archivo(tam_archivo + 1);
       lib::concurrent_buffer<lib::token_anotada> tokens(tam_archivo + 1);
       lib::concurrent_buffer<lib::declaracion_funcion> arbol((tam_archivo / 8) + bool(tam_archivo % 8) + 1);
+      std::map<std::string_view, lib::datos_funcion> funciones;
       try{
          tbb::parallel_invoke(
             [&] { lib::lee_archivo(entrada, archivo.output_iterator( )); },
             [&] { lib::lexer(archivo.inspect_iterator( ), tokens.output_iterator( )); },
-            [&] { lib::parser(tokens.inspect_iterator( ), arbol.output_iterator( )); }
+            [&] { lib::parser(tokens.inspect_iterator( ), arbol.output_iterator( )); },
+            [&] {lib::analiza_funcion(arbol.inspect_iterator(), funciones); }
          );
       }catch(const std::pair<lib::token_anotada, const char*>& e){
          reporta_error(std::cout, archivo.begin( ), archivo.end( ), e);
