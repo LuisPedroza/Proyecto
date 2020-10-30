@@ -95,7 +95,7 @@ int main(int argc, char *argv[]) {
             [&] { lib::lee_archivo(entrada, archivo.output_iterator( )); },
             [&] { lib::lexer(archivo.inspect_iterator( ), tokens.output_iterator( )); },
             [&] { lib::parser(tokens.inspect_iterator( ), arbol.output_iterator( )); },
-            [&] {lib::analiza_funcion(arbol.inspect_iterator(), funciones); }
+            [&] { lib::analiza_funcion(arbol.inspect_iterator(), funciones); }
          );
       }catch(const std::pair<lib::token_anotada, const char*>& e){
          reporta_error(std::cout, archivo.begin( ), archivo.end( ), e);

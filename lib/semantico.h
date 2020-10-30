@@ -7,17 +7,19 @@
 #include <vector>
 #include <type_traits> 
 #include <iostream>
+#include <utility>
 
 #include "lexer.h"
 #include "parser.h"
 
 namespace lib {
 
-    void espera(bool v, const char* mensaje, const token_anotada* pos) {
-        if (!v) {
-            throw std::make_pair(*pos, mensaje);
+    template<typename T>
+    void asercion(bool v, const T& elevar){
+        if(!v){
+            throw elevar;
         }
-    }
+    }    
 
     struct datos_funcion {
         std::vector<token> parametros;
@@ -31,6 +33,12 @@ namespace lib {
 
     using funciones = std::map<std::string_view, datos_funcion>;
     using ambitos = std::vector<std::map<std::string_view, token>>;
+    using ambito = std::map<std::string_view, token>;
+
+    void declara(ambito& a, const token_anotada& id, const token& tipo){        
+        asercion(a.count(id) == 0, std::make_pair(id, "No se puede volver a declarar dentro del mismo ambito."));
+
+    }
 
     tipo_expresion analiza_expresion(const expresion& nodo, funciones& f, ambitos& a, const token& retorno);
     tipo_expresion analiza_expresion_terminal(const expresion_terminal& nodo, funciones& f, ambitos& a, const token& retorno) {
@@ -44,8 +52,8 @@ namespace lib {
                     break;
                 }
             }
-            bool declarada_f = f.count(*nodo.t) != 0;
-            espera(declarada_v || declarada_f, "Variable no declarada.", nodo.get_token());                        
+            bool declarada_f = f.count(*nodo.t) != 0;            
+            asercion(declarada_v || declarada_f, std::make_pair(*nodo.get_token(), "Variable no declarada."));                      
             if(declarada_f){
                 return tipo_expresion{FUNCION, *nodo.t};
             }
@@ -60,14 +68,14 @@ namespace lib {
     tipo_expresion analiza_expresion_op_prefijo(const expresion_op_prefijo& nodo, funciones& f, ambitos& a, const token& retorno) {
         tipo_expresion t = analiza_expresion(*nodo.sobre, f, a, retorno);
         token tipo = nodo.operador->tipo;
-        if (tipo == TAMANYO_ARREGLO) {
-            espera(t.tipo == ARREGLO, "El operador se debe usar sobre un arreglo.", nodo.get_token());
+        if (tipo == TAMANYO_ARREGLO) {            
+            asercion(t.tipo == ARREGLO, std::make_pair(*nodo.get_token(), "El operador se debe usar sobre un arreglo."));
             return tipo_expresion{NUMERO};
-        } else if (tipo == RESTA) {
-            espera(t.tipo == NUMERO, "El operador se debe usar sobre un tipo numerico.", nodo.get_token());
+        } else if (tipo == RESTA) {            
+            asercion(t.tipo == NUMERO, std::make_pair(*nodo.get_token(), "El operador se debe usar sobre un tipo numerico."));
             return tipo_expresion{NUMERO};
-        } else {
-            espera(t.tipo == NUMERO, "El operador se debe usar sobre un tipo numerico.", nodo.get_token());
+        } else {            
+            asercion(t.tipo == NUMERO, std::make_pair(*nodo.get_token(), "El operador se debe usar sobre un tipo numerico."));
             return tipo_expresion{NUMERO};
         }
     }
@@ -75,19 +83,19 @@ namespace lib {
     tipo_expresion analiza_expresion_op_binario(const expresion_op_binario& nodo, funciones& f, ambitos& a, const token& retorno){
         tipo_expresion izq = analiza_expresion(*nodo.izq, f, a, retorno);
         tipo_expresion der = analiza_expresion(*nodo.der, f, a, retorno);
-        if(es_operador_rel(nodo.operador->tipo) || es_operador_log(nodo.operador->tipo) || (es_operador_arit(nodo.operador->tipo) && nodo.operador->tipo != MULTIPLICACION)){
-            espera(izq.tipo == NUMERO, "Debe ser de tipo numerico.", nodo.get_token(0));
-            espera(der.tipo == NUMERO, "Debe ser de tipo numerico.", nodo.get_token(1));
+        if(es_operador_rel(nodo.operador->tipo) || es_operador_log(nodo.operador->tipo) || (es_operador_arit(nodo.operador->tipo) && nodo.operador->tipo != MULTIPLICACION)){            
+            asercion(izq.tipo == NUMERO, std::make_pair(*nodo.izq->get_token(), "Debe ser de tipo numerico."));            
+            asercion(der.tipo == NUMERO, std::make_pair(*nodo.der->get_token(), "Debe ser de tipo numerico."));
             return tipo_expresion{NUMERO};
         }else{
-            if(izq.tipo == ARREGLO){
-                espera(der.tipo == ARREGLO, "Debe ser un arreglo.", nodo.get_token(1));
+            if(izq.tipo == ARREGLO){                
+                asercion(der.tipo == ARREGLO, std::make_pair(*nodo.der->get_token(), "Debe ser un arreglo."));
                 return tipo_expresion{ARREGLO};
-            }else if(izq.tipo == NUMERO){
-                espera(der.tipo == NUMERO, "Debe ser de tipo numerico.", nodo.get_token(1));
+            }else if(izq.tipo == NUMERO){                
+                asercion(der.tipo == NUMERO, std::make_pair(*nodo.der->get_token(), "Debe ser de tipo numerico."));
                 return tipo_expresion{NUMERO};
-            }else{
-                espera(false, "Tipos incorrectos.", nodo.get_token());
+            }else{                
+                asercion(false, std::make_pair(*nodo.get_token(), "Tipos incorrectos."));
             }
         }
     }
@@ -99,31 +107,31 @@ namespace lib {
         int tam =  fin_a - ini_a;
         if (t.tipo == FUNCION) {
             auto ini_p = f[t.f].parametros.begin();
-            auto fin_p = f[t.f].parametros.end();
-            espera(((fin_p - ini_p) == (fin_a - ini_a)), "Numero incorrecto de argumentos.", nodo.get_token());
+            auto fin_p = f[t.f].parametros.end();            
+            asercion((fin_p - ini_p) == (fin_a - ini_a), std::make_pair(*nodo.get_token(), "Numero incorrecto de argumentos."));
             while (ini_p != fin_p) {
-                tipo_expresion e = analiza_expresion(**ini_a, f, a, retorno);
-                espera((*ini_p == e.tipo), "Tipo de argumento incorrecto.", nodo.get_token(tam - (fin_a - ini_a)));
+                tipo_expresion e = analiza_expresion(**ini_a, f, a, retorno);                
+                asercion(*ini_p == e.tipo, std::make_pair(*nodo.parametros[tam - (fin_a - ini_a)]->get_token(), "Tipo de argumento incorrecto."));
                 ini_a++;
                 ini_p++;
             }
             return tipo_expresion{f[t.f].retorno};
-        } else {            
-            espera(tam == 1, "Error al indicar el tamaño del arreglo.", nodo.get_token(tam - (fin_a - ini_a)));
-            tipo_expresion e = analiza_expresion(**ini_a, f, a, retorno);
-            espera(e.tipo == NUMERO, "Tamaño de arreglo no valido.", nodo.get_token(tam - (fin_a - ini_a)));
+        } else {                        
+            asercion(tam == 1, std::make_pair(*nodo.parametros[tam - (fin_a - ini_a)]->get_token(), "Error al indicar el tamaño del arreglo."));
+            tipo_expresion e = analiza_expresion(**ini_a, f, a, retorno);            
+            asercion(e.tipo == NUMERO, std::make_pair(*nodo.parametros[tam - (fin_a - ini_a)]->get_token(), "Tamaño de arreglo no valido."));
             return tipo_expresion{NUMERO};
         }
     }
 
     tipo_expresion analiza_expresion_corchetes_posfijo(const expresion_corchetes_posfijo& nodo, funciones& f, ambitos& a, const token& retorno){
-        tipo_expresion ex = analiza_expresion(*nodo.ex, f, a, retorno);
-        espera(ex.tipo == ARREGLO, "La variable debe ser de tipo array.", nodo.get_token(0));
-        tipo_expresion izq = analiza_expresion(*nodo.izq, f, a, retorno);
-        espera(izq.tipo == NUMERO, "No es terminal.", nodo.get_token(1));
+        tipo_expresion ex = analiza_expresion(*nodo.ex, f, a, retorno);        
+        asercion(ex.tipo == ARREGLO, std::make_pair(*nodo.ex->get_token(), "La variable debe ser de tipo array."));
+        tipo_expresion izq = analiza_expresion(*nodo.izq, f, a, retorno);        
+        asercion(izq.tipo == NUMERO, std::make_pair(*nodo.izq->get_token(), "No es terminal."));
         if(nodo.der != nullptr){
-            tipo_expresion der = analiza_expresion(*nodo.der, f, a, retorno);
-            espera(der.tipo == NUMERO, "No es terminal.", nodo.get_token(2));
+            tipo_expresion der = analiza_expresion(*nodo.der, f, a, retorno);        
+            asercion(der.tipo == NUMERO, std::make_pair(*nodo.der->get_token(), "No es terminal"));
         }
         return tipo_expresion{ARREGLO};
     }
@@ -133,8 +141,8 @@ namespace lib {
         auto fin = nodo.elementos.end();
         int tam = fin - ini;
         while (ini != fin) {
-            tipo_expresion t = analiza_expresion(**ini, f, a, retorno);
-            espera(t.tipo == NUMERO, "No es terminal.", nodo.get_token(tam - (fin - ini)));
+            tipo_expresion t = analiza_expresion(**ini, f, a, retorno);            
+            asercion(t.tipo == NUMERO, std::make_pair(*nodo.elementos[tam - (fin - ini)]->get_token(), "No es terminal."));
             ini++;
         }
         return tipo_expresion{ARREGLO};
@@ -157,24 +165,25 @@ namespace lib {
     }
 
     void analiza_sentencia(const sentencia& nodo, funciones& f, ambitos& a, const token& retorno);
-    void analiza_declaracion(const sentencia_declaracion& nodo, funciones& f, ambitos& a, const token& retorno) {
-        espera(a.back().count(*nodo.nombre) == 0, "No se puede volver a declarar dentro del mismo ambito.", nodo.nombre);
-        tipo_expresion decl = analiza_expresion(*nodo.inicializador, f, a, retorno);
-        espera(decl.tipo == nodo.tipo->tipo, "Error tipo (Mejorar esto)", nodo.nombre);
+    void analiza_declaracion(const sentencia_declaracion& nodo, funciones& f, ambitos& a, const token& retorno) {        
+        asercion(a.back().count(*nodo.nombre) == 0, std::make_pair(*nodo.nombre, "No se puede volver a declarar dentro del mismo ambito."));
+        declara(a.back(), *nodo.nombre, nodo.tipo->tipo);
+        tipo_expresion decl = analiza_expresion(*nodo.inicializador, f, a, retorno);        
+        asercion(decl.tipo == nodo.tipo->tipo, std::make_pair(nodo.nombre, "Error tipo (Mejorar esto)"));
         a.back()[*nodo.nombre] = decl.tipo;
     }
 
     void analiza_if(const sentencia_if& nodo, funciones& f, ambitos& a, const token& retorno) {
-        tipo_expresion e_cond = analiza_expresion(*nodo.condicion, f, a, retorno);
-        espera(e_cond.tipo == NUMERO, "Condicion no valida.", nodo.condicion->get_token());
+        tipo_expresion e_cond = analiza_expresion(*nodo.condicion, f, a, retorno);        
+        asercion(e_cond.tipo == NUMERO, std::make_pair(*nodo.condicion->get_token(), "Condicion no valida."));
         tipo_expresion e_si, e_no;
-        std::map<std::string_view, token> m_si;
+        ambito m_si;
         a.push_back(m_si);
         for(auto& s : nodo.parte_si){
             analiza_sentencia(*s, f, a, retorno);
         }
         if(!nodo.parte_no.empty()){
-            std::map<std::string_view, token> m_no;
+            ambito m_no;
             a.push_back(m_no);
             for(auto& s : nodo.parte_no){
                 analiza_sentencia(*s, f, a, retorno);
@@ -183,8 +192,8 @@ namespace lib {
     }
 
     void analiza_return(const sentencia_return& nodo, funciones& f, ambitos& a, const token& retorno) {
-        tipo_expresion t = analiza_expresion(*nodo.ex, f, a, retorno);
-        espera(t.tipo == retorno, "Tipo de retorno incorrecto.", nodo.ex->get_token());
+        tipo_expresion t = analiza_expresion(*nodo.ex, f, a, retorno);        
+        asercion(t.tipo == retorno, std::make_pair(*nodo.ex->get_token(), "Tipo de retorno incorrecto."));
     }
 
     void analiza_sentencia(const sentencia& nodo, funciones& f, ambitos& a, const token& retorno) {
@@ -201,14 +210,15 @@ namespace lib {
     void analiza_funcion(FI iter, funciones& f) {
         while(iter->nombre != nullptr){
             std::vector<token> params;
-            std::map<std::string_view, token> ap;
+            ambito ap;
             for (auto p : iter->parametros) {
-                params.push_back(p.tipo->tipo);                        
-                ap[{p.nombre->ini, std::size_t(p.nombre->fin - p.nombre->ini)}] = p.tipo->tipo;
+                params.push_back(p.tipo->tipo);
+                declara(ap, *p.nombre, p.tipo->tipo);
+                ap[*p.nombre] = p.tipo->tipo;
             }
             ambitos a;
             a.push_back(ap);
-            f[{iter->nombre->ini, std::size_t(iter->nombre->fin - iter->nombre->ini)}] = datos_funcion{params, iter->retorno->tipo};
+            f[*iter->nombre] = datos_funcion{params, iter->retorno->tipo};
             for (const auto& s : iter->sentencias) {
                 analiza_sentencia(*s, f, a, iter->retorno->tipo);
             }

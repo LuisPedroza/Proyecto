@@ -43,11 +43,7 @@ namespace lib{
 
         const token_anotada* get_token() const {
             return operador;
-        }
-
-        const token_anotada* get_token(int lado) const {
-            return (lado == 0 ? izq->get_token() : der->get_token());
-        }
+        }        
     };
 
     struct expresion_parentesis_posfijo : expresion{
@@ -59,12 +55,6 @@ namespace lib{
         const token_anotada* get_token() const {
             return func->get_token();
         }
-
-        const token_anotada* get_token(int ind) const {
-            auto ini = parametros.begin();
-            ini += ind;
-            return (*ini)->get_token();
-        }
     };
 
     struct expresion_corchetes_posfijo: expresion{
@@ -73,17 +63,7 @@ namespace lib{
         expresion_corchetes_posfijo(std::unique_ptr<expresion>&& e, std::unique_ptr<expresion>&& i, std::unique_ptr<expresion>&& d): ex(std::move(e)), izq(std::move(i)), der(std::move(d)){}
 
         const token_anotada* get_token() const{
-            return nullptr;
-        }
-
-        const token_anotada* get_token(int op) const {
-            if(op == 0){
-                return ex->get_token();
-            }else if(op == 1){
-                return izq->get_token();
-            }else{
-                return der->get_token();
-            }
+            return ex->get_token();
         }
     };
 
@@ -94,12 +74,6 @@ namespace lib{
 
         const token_anotada* get_token() const{
             return (*elementos.begin())->get_token();
-        }
-
-        const token_anotada* get_token(int ind) const {
-            auto ini = elementos.begin();
-            std::advance(ini, ind);
-            return (*ini)->get_token();
         }
     };
 
