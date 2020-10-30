@@ -34,11 +34,10 @@ namespace lib {
     using funciones = std::map<std::string_view, datos_funcion>;
     using ambitos = std::vector<std::map<std::string_view, token>>;
     using ambito = std::map<std::string_view, token>;
-
-    void declara(ambito& a, const token_anotada& id, const token& tipo){        
+    
+    void declara(ambito& a, const token_anotada& id, const token& tipo){
         asercion(a.count(id) == 0, std::make_pair(id, "No se puede volver a declarar dentro del mismo ambito."));
-
-    }
+    }    
 
     tipo_expresion analiza_expresion(const expresion& nodo, funciones& f, ambitos& a, const token& retorno);
     tipo_expresion analiza_expresion_terminal(const expresion_terminal& nodo, funciones& f, ambitos& a, const token& retorno) {
@@ -52,7 +51,7 @@ namespace lib {
                     break;
                 }
             }
-            bool declarada_f = f.count(*nodo.t) != 0;            
+            bool declarada_f = f.count(*nodo.t) != 0;
             asercion(declarada_v || declarada_f, std::make_pair(*nodo.get_token(), "Variable no declarada."));                      
             if(declarada_f){
                 return tipo_expresion{FUNCION, *nodo.t};
@@ -107,10 +106,10 @@ namespace lib {
         int tam =  fin_a - ini_a;
         if (t.tipo == FUNCION) {
             auto ini_p = f[t.f].parametros.begin();
-            auto fin_p = f[t.f].parametros.end();            
+            auto fin_p = f[t.f].parametros.end();
             asercion((fin_p - ini_p) == (fin_a - ini_a), std::make_pair(*nodo.get_token(), "Numero incorrecto de argumentos."));
             while (ini_p != fin_p) {
-                tipo_expresion e = analiza_expresion(**ini_a, f, a, retorno);                
+                tipo_expresion e = analiza_expresion(**ini_a, f, a, retorno);
                 asercion(*ini_p == e.tipo, std::make_pair(*nodo.parametros[tam - (fin_a - ini_a)]->get_token(), "Tipo de argumento incorrecto."));
                 ini_a++;
                 ini_p++;
@@ -141,7 +140,7 @@ namespace lib {
         auto fin = nodo.elementos.end();
         int tam = fin - ini;
         while (ini != fin) {
-            tipo_expresion t = analiza_expresion(**ini, f, a, retorno);            
+            tipo_expresion t = analiza_expresion(**ini, f, a, retorno);
             asercion(t.tipo == NUMERO, std::make_pair(*nodo.elementos[tam - (fin - ini)]->get_token(), "No es terminal."));
             ini++;
         }
@@ -165,11 +164,10 @@ namespace lib {
     }
 
     void analiza_sentencia(const sentencia& nodo, funciones& f, ambitos& a, const token& retorno);
-    void analiza_declaracion(const sentencia_declaracion& nodo, funciones& f, ambitos& a, const token& retorno) {        
-        asercion(a.back().count(*nodo.nombre) == 0, std::make_pair(*nodo.nombre, "No se puede volver a declarar dentro del mismo ambito."));
+    void analiza_declaracion(const sentencia_declaracion& nodo, funciones& f, ambitos& a, const token& retorno) {
         declara(a.back(), *nodo.nombre, nodo.tipo->tipo);
-        tipo_expresion decl = analiza_expresion(*nodo.inicializador, f, a, retorno);        
-        asercion(decl.tipo == nodo.tipo->tipo, std::make_pair(nodo.nombre, "Error tipo (Mejorar esto)"));
+        tipo_expresion decl = analiza_expresion(*nodo.inicializador, f, a, retorno);
+        asercion(decl.tipo == nodo.tipo->tipo, std::make_pair(*nodo.inicializador->get_token(), "Debe coincidir con el tipo de la declaracion."));
         a.back()[*nodo.nombre] = decl.tipo;
     }
 
@@ -188,7 +186,9 @@ namespace lib {
             for(auto& s : nodo.parte_no){
                 analiza_sentencia(*s, f, a, retorno);
             }
+            a.pop_back();
         }
+        a.pop_back();
     }
 
     void analiza_return(const sentencia_return& nodo, funciones& f, ambitos& a, const token& retorno) {
@@ -218,6 +218,7 @@ namespace lib {
             }
             ambitos a;
             a.push_back(ap);
+            asercion(f.count(*iter->nombre) == 0, std::make_pair(*iter->nombre, "No se puede volver a declarar la funcion"));
             f[*iter->nombre] = datos_funcion{params, iter->retorno->tipo};
             for (const auto& s : iter->sentencias) {
                 analiza_sentencia(*s, f, a, iter->retorno->tipo);
