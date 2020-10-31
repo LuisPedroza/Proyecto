@@ -9,7 +9,7 @@ namespace lib {
    template<typename OI>
    void lee_archivo(std::istream& is, OI&& salida) {
       do {
-         is.read(salida, read_size);
+         is.read((char*)salida, read_size);
          salida += is.gcount( );
       } while (is);
       *salida++ = '\0';
