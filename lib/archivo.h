@@ -4,11 +4,13 @@
 #include <istream>
 
 namespace lib {
+   constexpr std::size_t read_size = 4096;
+
    template<typename OI>
    void lee_archivo(std::istream& is, OI&& salida) {
       do {
-         is.read(salida, 4096);
-         salida += is.gcount();
+         is.read(salida, read_size);
+         salida += is.gcount( );
       } while (is);
       *salida++ = '\0';
    }

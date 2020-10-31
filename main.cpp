@@ -4,11 +4,11 @@
 #include "lib/parser.h"
 #include "lib/semantico.h"
 #include "lib/debug.h"
-#include "tbb/parallel_invoke.h"
 #include <algorithm>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <future>
 #include <iostream>
 #include <iterator>
 #include <utility>
@@ -33,6 +33,24 @@ void reporta_error(std::ostream& os, const char* ini, const char* fin, const std
       << e.second << "\n";
 }
 
+template<typename ET, typename EH>
+void parallel_invoke(std::initializer_list<std::function<void( )>> funcs, EH&& error_handler) {
+   std::future<void> hilos[funcs.size( )];
+   for (int i = 0; i < funcs.size( ); ++i) {
+      hilos[i] = std::async(std::launch::async, [&, i]{
+         try {
+            funcs.begin( )[i]( );
+         } catch(const ET& e){
+            error_handler(e);
+         }
+      });
+   }
+
+   for (int i = 0; i < funcs.size( ); ++i) {
+      hilos[i].get( );
+   }
+}
+
 int main(int argc, char *argv[]) {
    if (argc < 2) {
       std::cerr << "Archivo de entrada no especificado\n";
@@ -51,7 +69,7 @@ int main(int argc, char *argv[]) {
 
    auto t0 = std::chrono::high_resolution_clock::now( );
    if (secuencial) {
-      std::vector<char> archivo(tam_archivo + 1);
+      std::vector<char> archivo(tam_archivo + 1 + lib::read_size);
       std::vector<lib::token_anotada> tokens;
       std::vector<lib::declaracion_funcion> arbol;
       std::map<std::string_view, lib::datos_funcion> funciones;
@@ -59,14 +77,17 @@ int main(int argc, char *argv[]) {
          lib::lee_archivo(entrada, archivo.data( ));
          if (debug) {
             std::cout << "Archivo leido." << '\n';
-            for(char c : archivo){
+            for(char c : archivo) {
+               if (c == '\0') {
+                  break;
+               }
                std::cout << c;
             }
          }
          lib::lexer(archivo.data( ), std::back_inserter(tokens));
          if (debug) {
             std::cout << "Tokens leidos." << '\n';
-            for(auto i : tokens){               
+            for(auto i : tokens){
                while(i.ini != i.fin){
                   std::cout << *i.ini++;
                }
@@ -80,26 +101,27 @@ int main(int argc, char *argv[]) {
                std::cout << i;
             }
             std::cout << '\n';
-         }         
+         }
          lib::analiza_funcion(arbol.data(), funciones);
       }catch(const std::pair<lib::token_anotada, const char*>& e){
          reporta_error(std::cout, archivo.data( ), archivo.data( ) + archivo.size( ), e);
+         std::exit(0);
       }
    } else {
-      lib::concurrent_buffer<char> archivo(tam_archivo + 1);
+      lib::concurrent_buffer<char> archivo(tam_archivo + 1 + lib::read_size);
       lib::concurrent_buffer<lib::token_anotada> tokens(tam_archivo + 1);
       lib::concurrent_buffer<lib::declaracion_funcion> arbol((tam_archivo / 8) + bool(tam_archivo % 8) + 1);
       std::map<std::string_view, lib::datos_funcion> funciones;
-      try{
-         tbb::parallel_invoke(
-            [&] { lib::lee_archivo(entrada, archivo.output_iterator( )); },
-            [&] { lib::lexer(archivo.inspect_iterator( ), tokens.output_iterator( )); },
-            [&] { lib::parser(tokens.inspect_iterator( ), arbol.output_iterator( )); },
-            [&] { lib::analiza_funcion(arbol.inspect_iterator(), funciones); }
-         );
-      }catch(const std::pair<lib::token_anotada, const char*>& e){
+
+      parallel_invoke<const std::pair<lib::token_anotada, const char*>>({
+         [&] { lib::lee_archivo(entrada, archivo.output_iterator( )); },
+         [&] { lib::lexer(archivo.inspect_iterator( ), tokens.output_iterator( )); },
+         [&] { lib::parser(tokens.inspect_iterator( ), arbol.output_iterator( )); },
+         [&] { lib::analiza_funcion(arbol.inspect_iterator(), funciones); }
+      }, [&](auto e) {
          reporta_error(std::cout, archivo.begin( ), archivo.end( ), e);
-      }
+         std::exit(0);
+      });
    }
 
    auto t1 = std::chrono::high_resolution_clock::now( );
