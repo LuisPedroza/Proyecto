@@ -36,35 +36,35 @@ namespace lib{
 
     template<typename FI>
     std::unique_ptr<sentencia> parsea_declaracion(FI& iter){
-        auto tipo = espera(iter, es_tipo);
-        auto nombre = espera(iter, es_identificador);
-        espera(iter, IGUAL);
+        auto tipo = espera(iter, es_tipo, "Se esperaba un tipo de dato.");
+        auto nombre = espera(iter, es_identificador, "Se esperaba un identificador.");
+        espera(iter, IGUAL, "Se esperaba un =");
         auto ex = parsea_expresion(iter);
-        espera(iter, PUNTO_COMA);
+        espera(iter, PUNTO_COMA, "Se esperaba un ;");
         return std::make_unique<sentencia_declaracion>(tipo, nombre, std::move(ex));
     }
 
     template<typename FI>
     std::unique_ptr<sentencia> parsea_if(FI& iter){
-        espera(iter, IF);
+        espera(iter, IF, "Se esperaba el comienzo de una sentencia condicional (if).");
         std::unique_ptr<expresion> cond = parsea_expresion(iter);
-        espera(iter, LLAVE_IZQ);
+        espera(iter, LLAVE_IZQ, "Se esperaba una {");
         std::vector<std::unique_ptr<sentencia>> si;
         while(iter->tipo != LLAVE_DER){
             si.push_back(parsea_sentencia(iter));
         }
-        espera(iter, LLAVE_DER);
+        espera(iter, LLAVE_DER, "Se esperaba una }");
         std::vector<std::unique_ptr<sentencia>> no;
         if(iter->tipo == ELSE){
             ++iter;
             if(iter->tipo == IF){
                 no.push_back(parsea_if(iter));
             }else{
-                espera(iter, LLAVE_IZQ);
+                espera(iter, LLAVE_IZQ, "Se esperaba una {");
                 while(iter->tipo != LLAVE_DER){
                     no.push_back(parsea_sentencia(iter));
                 }
-                espera(iter, LLAVE_DER);
+                espera(iter, LLAVE_DER, "Se esperaba una }");
             }
         }
         return std::make_unique<sentencia_if>(std::move(cond), std::move(si), std::move(no));
@@ -72,9 +72,9 @@ namespace lib{
 
     template<typename FI>
     std::unique_ptr<sentencia> parsea_return(FI& iter){
-        espera(iter, RETURN);
+        espera(iter, RETURN, "Se esperaba la palabra reservada return.");
         auto ex = parsea_expresion(iter);
-        espera(iter, PUNTO_COMA);
+        espera(iter, PUNTO_COMA, "Se esperaba un ;");
         return std::make_unique<sentencia_return>(std::move(ex));
     }
 

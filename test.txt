@@ -1,4 +1,4 @@
 function test(number a) : number{
-	number = 3;
+	number 1a = 3;
 	return a;
 }

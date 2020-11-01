@@ -22,29 +22,29 @@ namespace lib{
     std::vector<declaracion_funcion::parametro> parsea_parametros(FI& iter){
         std::vector<declaracion_funcion::parametro> p;
         while(es_tipo(iter->tipo)){
-            auto tipo = espera(iter, es_tipo);
+            auto tipo = espera(iter, es_tipo, "Se esperaba un tipo de dato.");
             auto nombre = espera(iter, IDENTIFICADOR, "Se esperaba un identificador");
             p.push_back({tipo, nombre});
             if(iter->tipo != COMA){
                 break;
             }
-            espera(iter, COMA);
+            espera(iter, COMA, "Se esperaba una ,");
         }
         return p;
     }
 
     template<typename FI>
     declaracion_funcion parsea_funcion(FI& iter){
-        espera(iter, FUNCION);
+        espera(iter, FUNCION, "Se esperaba la palabra reservada function.");
         auto nombre = espera(iter, es_funcion);
-        espera(iter, PARENTESIS_IZQ);
+        espera(iter, PARENTESIS_IZQ, "Se esperaba un (");
         auto parametros = parsea_parametros(iter);
-        espera(iter, PARENTESIS_DER);
-        espera(iter, DOS_PUNTOS);
+        espera(iter, PARENTESIS_DER, "Se esperaba un )");
+        espera(iter, DOS_PUNTOS, "Se esperaba un :");
         auto retorno = espera(iter, es_tipo);
-        espera(iter, LLAVE_IZQ);
+        espera(iter, LLAVE_IZQ, "Se esperaba una {");
         std::vector<std::unique_ptr<sentencia>> sentencias;
-        while(iter->tipo != LLAVE_DER){
+        while(iter->tipo != LLAVE_DER, "Se esperaba una }"){
             sentencias.push_back(parsea_sentencia(iter));
         }
         espera(iter, LLAVE_DER);

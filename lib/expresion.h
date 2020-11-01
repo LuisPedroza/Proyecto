@@ -86,18 +86,18 @@ namespace lib{
             return std::make_unique<expresion_terminal>(iter++);
         }else if(iter->tipo == PARENTESIS_IZQ){
             std::unique_ptr<expresion> ex = parsea_expresion(++iter);
-            espera(iter, PARENTESIS_DER);
+            espera(iter, PARENTESIS_DER, "Se esperaba un )");
             return ex;
         }else{
             std::vector<std::unique_ptr<expresion>> elem;
-            espera(iter, CORCHETE_IZQ);
+            espera(iter, CORCHETE_IZQ, "Se esperaba un [");
             while(iter->tipo != CORCHETE_DER){
                 elem.push_back(parsea_expresion(iter));
                 if(iter->tipo != CORCHETE_DER){
-                   espera(iter, COMA);
+                   espera(iter, COMA, "Se esperaba una ,");
                 }
             }
-            espera(iter, CORCHETE_DER);
+            espera(iter, CORCHETE_DER, "Se esperaba un ]");
             return std::make_unique<expresion_arreglo>(std::move(elem));
         }
     }
@@ -116,10 +116,10 @@ namespace lib{
                 while(iter->tipo != PARENTESIS_DER){
                     parametros.push_back(parsea_expresion(iter));
                     if(iter->tipo != PARENTESIS_DER){
-                        espera(iter, COMA);
+                        espera(iter, COMA, "Se esperaba una ,");
                     }
                 }
-                espera(iter, PARENTESIS_DER);
+                espera(iter, PARENTESIS_DER, "Se esperaba un )");
                 ex = std::make_unique<expresion_parentesis_posfijo>(std::move(ex), std::move(parametros));
             }else if(iter->tipo == CORCHETE_IZQ){
                 ++iter;
@@ -128,9 +128,9 @@ namespace lib{
                     ++iter;
                     ex = std::make_unique<expresion_corchetes_posfijo>(std::move(ex), std::move(izq), nullptr);
                 }else{
-                    espera(iter, SLICE);
+                    espera(iter, SLICE, "Se esperaba un ..");
                     auto der = parsea_expresion(iter);
-                    espera(iter, CORCHETE_DER);
+                    espera(iter, CORCHETE_DER, "Se esperaba un ]");
                     ex = std::make_unique<expresion_corchetes_posfijo>(std::move(ex), std::move(izq), std::move(der));
                 }
             }

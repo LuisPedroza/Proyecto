@@ -45,4 +45,4 @@ function main(number n): number {      ' la entrada son los parámetros de main,
       ..                     (se usa para obtener el slice de un arreglo)
 "
 
-' g++-10 -std=c++20 main.cpp -ltbb -fconcepts
+' g++-10 -std=c++20 main.cpp -phthread -fconcepts
