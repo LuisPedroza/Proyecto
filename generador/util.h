@@ -96,6 +96,9 @@ struct datos {
 
     std::string genera_id_var(int t) {
         std::string aux = fmt::format("{}{}_{}{}", genera_car(0), genera_car(0), genera_car(1), genera_car(2));
+        while((std::find(v_num.begin(), v_num.end(), aux) != v_num.end()) || (std::find(v_arr.begin(), v_arr.end(), aux) != v_arr.end())){
+            aux = fmt::format("{}{}_{}{}", genera_car(0), genera_car(0), genera_car(1), genera_car(2));
+        }
         t == 0 ? v_num.push_back(aux) : v_arr.push_back(aux);
         return aux;
     }
