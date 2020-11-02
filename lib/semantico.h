@@ -37,6 +37,8 @@ namespace lib {
     
     void declara(ambito& a, const token_anotada& id, const token& tipo){
         asercion(a.count(id) == 0, std::make_pair(id, "No se puede volver a declarar dentro del mismo ambito."));
+        a[id] = tipo;
+        
     }    
 
     tipo_expresion analiza_expresion(const expresion& nodo, funciones& f, ambitos& a, const token& retorno);
@@ -164,11 +166,10 @@ namespace lib {
     }
 
     void analiza_sentencia(const sentencia& nodo, funciones& f, ambitos& a, const token& retorno);
-    void analiza_declaracion(const sentencia_declaracion& nodo, funciones& f, ambitos& a, const token& retorno) {
-        declara(a.back(), *nodo.nombre, nodo.tipo->tipo);
+    void analiza_declaracion(const sentencia_declaracion& nodo, funciones& f, ambitos& a, const token& retorno) {        
         tipo_expresion decl = analiza_expresion(*nodo.inicializador, f, a, retorno);
         asercion(decl.tipo == nodo.tipo->tipo, std::make_pair(*nodo.inicializador->get_token(), "Debe coincidir con el tipo de la declaracion."));
-        a.back()[*nodo.nombre] = decl.tipo;
+        declara(a.back(), *nodo.nombre, nodo.tipo->tipo);        
     }
 
     void analiza_if(const sentencia_if& nodo, funciones& f, ambitos& a, const token& retorno) {
@@ -186,7 +187,7 @@ namespace lib {
             for(auto& s : nodo.parte_no){
                 analiza_sentencia(*s, f, a, retorno);
             }
-            a.pop_back();
+                     a.pop_back();
         }
         a.pop_back();
     }
@@ -213,8 +214,7 @@ namespace lib {
             ambito ap;
             for (auto p : iter->parametros) {
                 params.push_back(p.tipo->tipo);
-                declara(ap, *p.nombre, p.tipo->tipo);
-                ap[*p.nombre] = p.tipo->tipo;
+                declara(ap, *p.nombre, p.tipo->tipo);                
             }
             ambitos a;
             a.push_back(ap);

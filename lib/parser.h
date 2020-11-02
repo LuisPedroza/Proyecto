@@ -44,7 +44,7 @@ namespace lib{
         auto retorno = espera(iter, es_tipo);
         espera(iter, LLAVE_IZQ, "Se esperaba una {");
         std::vector<std::unique_ptr<sentencia>> sentencias;
-        while(iter->tipo != LLAVE_DER, "Se esperaba una }"){
+        while(iter->tipo != LLAVE_DER){
             sentencias.push_back(parsea_sentencia(iter));
         }
         espera(iter, LLAVE_DER);
