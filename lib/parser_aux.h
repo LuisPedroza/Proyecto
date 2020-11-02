@@ -49,21 +49,13 @@ namespace lib{
 
     bool es_operador_prefijo(token t){
         return t == TAMANYO_ARREGLO || t == RESTA || t == NOT;
-    }
+    }   
 
     bool es_operador_binario(token t){
         return t == IGUAL || t == SUMA || t == RESTA || t == DIVISION || t == MULTIPLICACION || t == RESIDUO || t == PISO || t == POTENCIA || t == AND || t == OR || t == DIFERENTE;
     }
 
-    bool es_operador_log(token t){
-        return t == AND || t == OR || t == DIFERENTE;
-    }
-
-    bool es_operador_arit(token t){
-        return t == SUMA || t == RESTA || t == DIVISION || t == MULTIPLICACION || t == RESIDUO || t == PISO || t == POTENCIA;
-    }
-
-    bool es_operador_rel(token t){
+    bool es_operador_relacional(token t){
         return t == MENOR || t == MENOR_IGUAL || t == MAYOR || t == MAYOR_IGUAL;
     }
 

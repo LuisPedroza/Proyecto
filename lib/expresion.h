@@ -141,7 +141,7 @@ namespace lib{
     template<typename FI>
     std::unique_ptr<expresion> parsea_expresion_n_aria(FI& iter, int prec){
         std::unique_ptr<expresion> ex = parsea_expresion_unaria(iter);
-        while((es_operador_binario(iter->tipo) || es_operador_rel(iter->tipo)) && precedencia(iter->tipo) >= prec){
+        while((es_operador_binario(iter->tipo) || es_operador_relacional(iter->tipo)) && precedencia(iter->tipo) >= prec){
             auto op = iter++;
             ex = std::make_unique<expresion_op_binario>(std::move(ex), op, parsea_expresion_n_aria(iter, precedencia(op->tipo) + asociatividad(op->tipo)));
         }

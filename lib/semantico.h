@@ -72,9 +72,6 @@ namespace lib {
         if (tipo == TAMANYO_ARREGLO) {            
             asercion(t.tipo == ARREGLO, std::make_pair(*nodo.get_token(), "El operador se debe usar sobre un arreglo."));
             return tipo_expresion{NUMERO};
-        } else if (tipo == RESTA) {            
-            asercion(t.tipo == NUMERO, std::make_pair(*nodo.get_token(), "El operador se debe usar sobre un tipo numerico."));
-            return tipo_expresion{NUMERO};
         } else {            
             asercion(t.tipo == NUMERO, std::make_pair(*nodo.get_token(), "El operador se debe usar sobre un tipo numerico."));
             return tipo_expresion{NUMERO};
@@ -84,20 +81,13 @@ namespace lib {
     tipo_expresion analiza_expresion_op_binario(const expresion_op_binario& nodo, funciones& f, ambitos& a, const token& retorno){
         tipo_expresion izq = analiza_expresion(*nodo.izq, f, a, retorno);
         tipo_expresion der = analiza_expresion(*nodo.der, f, a, retorno);
-        if(es_operador_rel(nodo.operador->tipo) || es_operador_log(nodo.operador->tipo) || (es_operador_arit(nodo.operador->tipo) && nodo.operador->tipo != MULTIPLICACION)){            
-            asercion(izq.tipo == NUMERO, std::make_pair(*nodo.izq->get_token(), "Debe ser de tipo numerico."));            
+        if (izq.tipo == ARREGLO && nodo.operador->tipo == MULTIPLICACION) {
+            asercion(der.tipo == ARREGLO, std::make_pair(*nodo.der->get_token(), "Debe ser un arreglo."));
+            return tipo_expresion{ARREGLO};
+        }else{
+            asercion(izq.tipo == NUMERO, std::make_pair(*nodo.izq->get_token(), "Debe ser de tipo numerico."));
             asercion(der.tipo == NUMERO, std::make_pair(*nodo.der->get_token(), "Debe ser de tipo numerico."));
             return tipo_expresion{NUMERO};
-        }else{
-            if(izq.tipo == ARREGLO){                
-                asercion(der.tipo == ARREGLO, std::make_pair(*nodo.der->get_token(), "Debe ser un arreglo."));
-                return tipo_expresion{ARREGLO};
-            }else if(izq.tipo == NUMERO){                
-                asercion(der.tipo == NUMERO, std::make_pair(*nodo.der->get_token(), "Debe ser de tipo numerico."));
-                return tipo_expresion{NUMERO};
-            }else{                
-                asercion(false, std::make_pair(*nodo.get_token(), "Tipos incorrectos."));
-            }
         }
     }
 
@@ -107,20 +97,18 @@ namespace lib {
         auto fin_a = nodo.parametros.end();
         int tam =  fin_a - ini_a;
         if (t.tipo == FUNCION) {
+            asercion(f[t.f].parametros.size() == nodo.parametros.size(), std::make_pair(*nodo.get_token(), "Numero incorrecto de argumentos."));            
             auto ini_p = f[t.f].parametros.begin();
-            auto fin_p = f[t.f].parametros.end();
-            asercion((fin_p - ini_p) == (fin_a - ini_a), std::make_pair(*nodo.get_token(), "Numero incorrecto de argumentos."));
-            while (ini_p != fin_p) {
-                tipo_expresion e = analiza_expresion(**ini_a, f, a, retorno);
-                asercion(*ini_p == e.tipo, std::make_pair(*nodo.parametros[tam - (fin_a - ini_a)]->get_token(), "Tipo de argumento incorrecto."));
-                ini_a++;
-                ini_p++;
+            for(const auto& actual : nodo.parametros){
+                tipo_expresion t = analiza_expresion(*actual, f, a, retorno);
+                asercion(*ini_p++ == t.tipo, std::make_pair(actual->get_token(), "Tipo de argumento incorrecto."));
             }
             return tipo_expresion{f[t.f].retorno};
-        } else {                        
-            asercion(tam == 1, std::make_pair(*nodo.parametros[tam - (fin_a - ini_a)]->get_token(), "Error al indicar el tamaño del arreglo."));
-            tipo_expresion e = analiza_expresion(**ini_a, f, a, retorno);            
-            asercion(e.tipo == NUMERO, std::make_pair(*nodo.parametros[tam - (fin_a - ini_a)]->get_token(), "Tamaño de arreglo no valido."));
+        } else {
+            asercion(t.tipo == ARREGLO, std::make_pair(*nodo.get_token(), "Debe ser de tipo array."));
+            asercion(tam == 1, std::make_pair(*nodo.get_token(), "Error al indicar el tamaño del arreglo."));
+            tipo_expresion e = analiza_expresion(**ini_a, f, a, retorno);
+            asercion(e.tipo == NUMERO, std::make_pair(*nodo.parametros[0]->get_token(), "Tamaño de arreglo no valido."));
             return tipo_expresion{NUMERO};
         }
     }
@@ -129,22 +117,18 @@ namespace lib {
         tipo_expresion ex = analiza_expresion(*nodo.ex, f, a, retorno);        
         asercion(ex.tipo == ARREGLO, std::make_pair(*nodo.ex->get_token(), "La variable debe ser de tipo array."));
         tipo_expresion izq = analiza_expresion(*nodo.izq, f, a, retorno);        
-        asercion(izq.tipo == NUMERO, std::make_pair(*nodo.izq->get_token(), "No es terminal."));
+        asercion(izq.tipo == NUMERO, std::make_pair(*nodo.izq->get_token(), "Se esperaba un numero."));
         if(nodo.der != nullptr){
             tipo_expresion der = analiza_expresion(*nodo.der, f, a, retorno);        
-            asercion(der.tipo == NUMERO, std::make_pair(*nodo.der->get_token(), "No es terminal"));
+            asercion(der.tipo == NUMERO, std::make_pair(*nodo.der->get_token(), "Se esperaba un numero"));
         }
         return tipo_expresion{ARREGLO};
     }
 
     tipo_expresion analiza_expresion_arreglo(const expresion_arreglo& nodo, funciones& f, ambitos& a, const token& retorno) {
-        auto ini = nodo.elementos.begin();
-        auto fin = nodo.elementos.end();
-        int tam = fin - ini;
-        while (ini != fin) {
-            tipo_expresion t = analiza_expresion(**ini, f, a, retorno);
-            asercion(t.tipo == NUMERO, std::make_pair(*nodo.elementos[tam - (fin - ini)]->get_token(), "No es terminal."));
-            ini++;
+        for (const auto& actual : nodo.elementos) {
+            tipo_expresion t = analiza_expresion(*actual, f, a, retorno);
+            asercion(t.tipo == NUMERO, std::make_pair(actual->get_token(), "No es un numero."));
         }
         return tipo_expresion{ARREGLO};
     }
@@ -181,15 +165,15 @@ namespace lib {
         for(auto& s : nodo.parte_si){
             analiza_sentencia(*s, f, a, retorno);
         }
+        a.pop_back();
         if(!nodo.parte_no.empty()){
             ambito m_no;
-            a.push_back(m_no);
+            a.push_back(m_no);            
             for(auto& s : nodo.parte_no){
                 analiza_sentencia(*s, f, a, retorno);
             }
-                     a.pop_back();
-        }
-        a.pop_back();
+            a.pop_back();
+        }        
     }
 
     void analiza_return(const sentencia_return& nodo, funciones& f, ambitos& a, const token& retorno) {
