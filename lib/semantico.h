@@ -36,9 +36,8 @@ namespace lib {
     using ambito = std::map<std::string_view, token>;
 
     void declara(ambito& a, const token_anotada& id, const token& tipo){
-        asercion(a.count(id) == 0, std::make_pair(id, "No se puede volver a declarar dentro del mismo ambito."));
-        a[id] = tipo;
-
+        auto insertado = a.emplace(id, tipo).second;
+        asercion(insertado, std::make_pair(id, "No se puede volver a declarar dentro del mismo ambito."));
     }
 
     datos_expresion analiza_expresion(const expresion& nodo, const funciones& f, ambitos& a, const token& retorno);
@@ -129,21 +128,20 @@ namespace lib {
     }
 
     datos_expresion analiza_expresion(const expresion& nodo, const funciones& f, ambitos& a, const token& retorno) {
-        if (typeid(nodo) == typeid(expresion_terminal)) {
-            return analiza_expresion_terminal(dynamic_cast<const expresion_terminal&>(nodo), f, a, retorno);
-        } else if (typeid(nodo) == typeid(expresion_op_prefijo)) {
-            return analiza_expresion_op_prefijo(dynamic_cast<const expresion_op_prefijo&>(nodo), f, a, retorno);
-        } else if (typeid(nodo) == typeid(expresion_op_binario)) {
-            return analiza_expresion_op_binario(dynamic_cast<const expresion_op_binario&>(nodo), f, a, retorno);
-        } else if (typeid(nodo) == typeid(expresion_parentesis_posfijo)) {
-            return analiza_expresion_parentesis_posfijo(dynamic_cast<const expresion_parentesis_posfijo&>(nodo), f, a, retorno);
-        } else if (typeid(nodo) == typeid(expresion_corchetes_posfijo)) {
-            return analiza_expresion_corchetes_posfijo(dynamic_cast<const expresion_corchetes_posfijo&>(nodo), f, a, retorno);
-        } else if (typeid(nodo) == typeid(expresion_arreglo)) {
-            return analiza_expresion_arreglo(dynamic_cast<const expresion_arreglo&>(nodo), f, a, retorno);
+        if (auto p = dynamic_cast<const expresion_terminal*>(&nodo); p != nullptr) {
+            return analiza_expresion_terminal(*p, f, a, retorno);
+        } else if (auto p = dynamic_cast<const expresion_op_prefijo*>(&nodo); p != nullptr) {
+            return analiza_expresion_op_prefijo(*p, f, a, retorno);
+        } else if (auto p = dynamic_cast<const expresion_op_binario*>(&nodo); p != nullptr) {
+            return analiza_expresion_op_binario(*p, f, a, retorno);
+        } else if (auto p = dynamic_cast<const expresion_parentesis_posfijo*>(&nodo); p != nullptr) {
+            return analiza_expresion_parentesis_posfijo(*p, f, a, retorno);
+        } else if (auto p = dynamic_cast<const expresion_corchetes_posfijo*>(&nodo); p != nullptr) {
+            return analiza_expresion_corchetes_posfijo(*p, f, a, retorno);
+        } else if (auto p = dynamic_cast<const expresion_arreglo*>(&nodo); p != nullptr) {
+            return analiza_expresion_arreglo(*p, f, a, retorno);
         }
     }
-
     void analiza_sentencia(const sentencia& nodo, const funciones& f, ambitos& a, const token& retorno);
     void analiza_declaracion(const sentencia_declaracion& nodo, const funciones& f, ambitos& a, const token& retorno) {
         datos_expresion decl = analiza_expresion(*nodo.inicializador, f, a, retorno);
@@ -177,11 +175,11 @@ namespace lib {
     }
 
     void analiza_sentencia(const sentencia& nodo, const funciones& f, ambitos& a, const token& retorno) {
-        if (typeid(nodo) == typeid(sentencia_declaracion)) {
+        if (auto p = dynamic_cast<const sentencia_declaracion*>(&nodo); p != nullptr) {
             return analiza_declaracion(dynamic_cast<const sentencia_declaracion&>(nodo), f, a, retorno);
-        } else if (typeid(nodo) == typeid(sentencia_if)) {
+        } else if (auto p = dynamic_cast<const sentencia_if*>(&nodo); p != nullptr) {
             return analiza_if(dynamic_cast<const sentencia_if&>(nodo), f, a, retorno);
-        } else if (typeid(nodo) == typeid(sentencia_return)) {
+        } else if (auto p = dynamic_cast<const sentencia_return*>(&nodo); p != nullptr) {
             return analiza_return(dynamic_cast<const sentencia_return&>(nodo), f, a, retorno);
         }
     }
@@ -197,8 +195,8 @@ namespace lib {
             }
             ambitos a;
             a.push_back(ap);
-            asercion(f.count(*iter->nombre) == 0, std::make_pair(*iter->nombre, "No se puede volver a declarar la funcion"));
-            f[*iter->nombre] = datos_funcion{params, iter->retorno->tipo};
+            auto insertado = f.emplace(*iter->nombre, datos_funcion{std::move(params), iter->retorno->tipo}).second;
+            asercion(insertado, std::make_pair(*iter->nombre, "No se puede volver a declarar la funcion"));
             for (const auto& s : iter->sentencias) {
                 analiza_sentencia(*s, f, a, iter->retorno->tipo);
             }
