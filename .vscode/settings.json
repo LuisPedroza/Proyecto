@@ -64,6 +64,8 @@
         "variant": "cpp",
         "filesystem": "cpp",
         "condition_variable": "cpp",
-        "shared_mutex": "cpp"
+        "shared_mutex": "cpp",
+        "future": "cpp",
+        "mutex": "cpp"
     }
 }

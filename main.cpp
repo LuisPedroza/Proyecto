@@ -65,44 +65,73 @@ int main(int argc, char *argv[]) {
 
    std::size_t tam_archivo = std::filesystem::file_size(argv[1]);
    bool debug = (argc >= 3 && std::strcmp(argv[2], "debug") == 0);
+   bool debug_tiempo = (argc >= 4 && std::strcmp(argv[3], "-t") == 0);
    bool secuencial = (debug || argc >= 3 && std::strcmp(argv[2], "secuencial") == 0);
 
-   auto t0 = std::chrono::high_resolution_clock::now( );
+   auto t0 = std::chrono::high_resolution_clock::now( );   
    if (secuencial) {
       std::vector<char> archivo(tam_archivo + 1 + lib::read_size);
       std::vector<lib::token_anotada> tokens;
       std::vector<lib::declaracion_funcion> arbol;
       std::map<std::string_view, lib::datos_funcion> funciones;
       try{
+         auto t_ini = std::chrono::high_resolution_clock::now( );
          lib::lee_archivo(entrada, archivo.data( ));
+         auto t_fin = std::chrono::high_resolution_clock::now( );
          if (debug) {
             std::cout << "Archivo leido." << '\n';
-            for(char c : archivo) {
-               if (c == '\0') {
-                  break;
+            if(!debug_tiempo){
+               for(char c : archivo) {
+                  if (c == '\0') {
+                     break;
+                  }
+                  std::cout << c;
                }
-               std::cout << c;
+            }else{
+               std::clog << "Tiempo: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
             }
          }
+         t_ini = std::chrono::high_resolution_clock::now( );
          lib::lexer(archivo.data( ), std::back_inserter(tokens));
+         t_fin = std::chrono::high_resolution_clock::now( );
          if (debug) {
             std::cout << "Tokens leidos." << '\n';
-            for(auto i : tokens){
-               while(i.ini != i.fin){
-                  std::cout << *i.ini++;
+            if(!debug_tiempo){
+               for(auto i : tokens){
+                  while(i.ini != i.fin){
+                     std::cout << *i.ini++;
+                  }
+                  std::cout << '\t' << i.tipo << '\n';
                }
-               std::cout << '\t' << i.tipo << '\n';
+            }else{
+               std::clog << "Tiempo: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
             }
          }
+         t_ini = std::chrono::high_resolution_clock::now( );
          lib::parser(tokens.data(), std::back_inserter(arbol));
+         t_fin = std::chrono::high_resolution_clock::now( );
          if(debug){
             std::cout << "Arbol generado." << '\n';
-            for(auto const& i : arbol){
-               std::cout << i;
+            if(!debug_tiempo){
+               for(auto const& i : arbol){
+                  std::cout << i;
+               }
+               std::cout << '\n';
+            }else{
+               std::clog << "Tiempo: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
             }
-            std::cout << '\n';
          }
+         t_ini = std::chrono::high_resolution_clock::now( );
          lib::analiza_funcion(arbol.data(), funciones);
+         t_fin = std::chrono::high_resolution_clock::now( );
+         if(debug){
+            std::cout << "Arbol analizado." << '\n';
+            if(!debug_tiempo){
+
+            }else{
+               std::clog << "Tiempo: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
+            }
+         }
       }catch(const std::pair<lib::token_anotada, const char*>& e){
          reporta_error(std::cout, archivo.data( ), archivo.data( ) + archivo.size( ), e);
          std::exit(0);
@@ -125,5 +154,5 @@ int main(int argc, char *argv[]) {
    }
 
    auto t1 = std::chrono::high_resolution_clock::now( );
-   std::clog << "Tiempo: " << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count( ) / 1000.0 << "\n";
+   std::clog << "Tiempo Total: " << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count( ) / 1000.0 << "\n";
 }
