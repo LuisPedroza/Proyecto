@@ -13,16 +13,14 @@ double not_operator(const double& n){
     return !n;
 }
 
-double mod(const double& a, const double& b){
-    return std::fmod(a,b);
-}
-
 std::vector<double> slice(const std::vector<double>& v, const double& ini, const double& fin){
     return std::vector<double>(v.begin() + ini, v.begin() + fin);
 }
 
-void concatenate(std::vector<double>& dest, std::vector<double>& src){
-    dest.insert(dest.end(), std::make_move_iterator(src.begin()), std::make_move_iterator(src.end()));
+std::vector<double> concatenate(std::vector<double>& v1, std::vector<double>& v2){
+    std::vector<double> aux = v1;
+    aux.insert(aux.end(), v2.begin(), v2.end());
+    return aux;
 }
 
 #endif

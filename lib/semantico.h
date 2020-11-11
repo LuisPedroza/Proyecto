@@ -28,7 +28,7 @@ namespace lib {
 
     struct datos_expresion {
         token tipo;                  // NUMBER, ARRAY o FUNCTION
-        std::string_view nombre;     // en el semántico: si el token fue FUNCTION, el nombre de la función; vacío en otro caso
+        std::string nombre;          // en el semántico: si el token fue FUNCTION, el nombre de la función; vacío en otro caso
     };                               // en el codegen: el identificador del temporal
 
     using funciones = std::map<std::string_view, datos_funcion>;
@@ -53,7 +53,8 @@ namespace lib {
                 }
             }
             asercion(declarada_v || declarada_f, std::make_pair(*nodo.get_token(), "Variable no declarada."));
-            return (declarada_v ? datos_expresion{it->second} : datos_expresion{FUNCION, *nodo.t});
+            std::string_view nombre = *nodo.t;
+            return (declarada_v ? datos_expresion{it->second} : datos_expresion{FUNCION, {nombre.begin(), nombre.end()}});
         } else {
             return datos_expresion{NUMERO};
         }

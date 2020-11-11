@@ -153,12 +153,14 @@ int main(int argc, char *argv[]) {
       lib::concurrent_buffer<lib::declaracion_funcion> arbol((tam_archivo / 8) + bool(tam_archivo % 8) + 1);
       std::map<std::string_view, lib::datos_funcion> funciones;
       std::ofstream salida(std::string(ruta) + ".cpp");
+      std::ostringstream codigo;      
 
       parallel_invoke<const std::pair<lib::token_anotada, const char*>>({
          [&] { lib::lee_archivo(entrada, archivo.output_iterator( )); },
          [&] { lib::lexer(archivo.inspect_iterator( ), tokens.output_iterator( )); },
          [&] { lib::parser(tokens.inspect_iterator( ), arbol.output_iterator( )); },
-         [&] { lib::analiza_funcion(arbol.inspect_iterator(), funciones); }
+         [&] { lib::analiza_funcion(arbol.inspect_iterator(), funciones); },
+         [&] { lib::escribe_funcion(arbol.inspect_iterator(), funciones, codigo); }
       }, [&](auto e) {
          reporta_error(std::cout, archivo.begin( ), archivo.end( ), e);
          std::exit(0);

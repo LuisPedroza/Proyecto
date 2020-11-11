@@ -1,4 +1,146 @@
-function test() : number{
-	array t = [1,2,3] * [1,2,3];
-	return #t;
+function cue_DCH_419(number UE_k5,number QP_i1,number HH_x0,number RU_u1): number{
+	if HH_x0 < QP_i1 {
+		return QP_i1;
+	} else {
+		number LJ_s0 = HH_x0 % RU_u1;
+		' comentario	comentario 
+		return HH_x0;
+	}
+	if 20914 <= QP_i1 {
+		array HH_k6 = [546537,189118,349929,159642,962921,909681,171074,658296,63086];
+		return HH_x0;
+	} else {
+		number VO_f5 = QP_i1 ^ QP_i1;
+		return HH_x0;
+	}
+	return UE_k5;
 }
+
+function aqh_VDB_003(array IB_m4,array NH_t3,array MH_l1,number OL_o6): number{
+	number VO_d4 = 395760;
+	if [307817,911929,191680,251057,53400](1) > #[998544,681390,262718,451151,433169,549406] {
+		array YJ_t4 = NH_t3[0..4] * MH_l1[0..2];
+		return 916814;
+	} else {
+		return 356507;
+	}
+	number RT_s8 = 727853;
+	if #[218694,852178,666732,271744,387949,330561,570072,74304] > 750807 {
+		return 706028;
+	}
+	array JS_p4 = [786133,674429,722270,533401,902365] * [215334,288019,29518,524161,404413,249790,34273,565006,668542];
+	return 833488;
+}
+
+function psc_KHQ_878(number JL_u8,array AI_w3,array WR_l2,array SL_c8): number{
+	if 966133 = 652766 | [686518,295131,967751,885312,700992,587110](5) >= 86608 {
+		number UW_i4 = 904725;
+		return 203695;
+	}
+	if #[273857,780981,371608,940407,908157,671599,206351] != 521141 | 108653 != 100664 {
+		array LM_g0 = SL_c8[0..3];
+		return 915858;
+	} else {
+		array HF_e4 = AI_w3[0..3] * AI_w3[0..5];
+		return 853401;
+	}
+	number PN_n1 = 742316;
+	return 826301;
+}
+
+function rrw_JOC_430(array MG_w9,array DJ_o8,number JQ_n9,number EX_n4): array{
+	if 374648 > 740691 | #[283596,711268,624401,138094,833894,222101,303493,702160] >= #[402540,884970,332725,382830,490214] {
+		number WO_v8 = 301092;
+		"
+		comentario			comentario 		comentario			comentario 
+		comentario 		comentario			comentario 
+		comentario	
+		"
+		number NT_x1 = JQ_n9 + cue_DCH_419(WO_v8,EX_n4,WO_v8,JQ_n9);
+		array YP_a5 = [954646,489818,90744,683388,95643];
+		array HE_f0 = YP_a5[0..2];
+		return MG_w9;
+	} else {
+		number CQ_p2 = 975346;
+		return [880023,399592,998000,384574,105691];
+	}
+	number AM_f8 = 763764;
+	"
+	comentario 	comentario		comentario 	comentario 	comentario 
+	comentario 
+	comentario		comentario 	comentario 	comentario 	comentario	
+	comentario		comentario 	comentario 	comentario 	comentario 	comentario	
+	comentario 	comentario		comentario 	comentario 	comentario		comentario		comentario	
+	"
+	return [543482,230136,214348,349137,277696,673555,863845];
+}
+
+function xqt_INQ_093(array YX_d4,number AH_n6,array OY_q1,array GR_i6,array LU_u3): array{
+	return OY_q1;
+}
+
+function tbj_KHC_727(number JM_p4,number KM_f9): number{
+	return 158914;
+}
+
+function cxl_YIB_204(array OI_r7,number ML_u5): array{
+	number VK_f9 = 692941;
+	number VC_e8 = 961692;
+	array WH_g4 = rrw_JOC_430([258754,353636,473684,475403,842814,561867],[121058,371061,486705,658505,899979,302831,447778,483777],700514,839144);
+	if [793058,199676,703600,616683,808270](4) > #[220156,729557,479190,738979,592354,88157] {
+		return [765466,802642,485471,486511,470666,875080,556453];
+	}
+	number IQ_u2 = cue_DCH_419(VC_e8,ML_u5,VC_e8,VC_e8) ^ cue_DCH_419(VC_e8,VC_e8,VC_e8,VC_e8);
+	number CQ_w9 = aqh_VDB_003([949352,185483,101981,649849,815370,973000,973512,421404],[730934,954500,492882,847546,138684,264517,568459],[441437,572170,941408,101556,26510],IQ_u2) % IQ_u2;
+	return [213681,299016,866154,930944,789000,694801,272562,36915];
+}
+
+function rut_IOV_708(array YM_r6,number VR_q3,number JN_v1): number{
+	return 132570;
+}
+
+function uir_RBR_743(number JX_f3,array RH_v0): number{
+	array DD_r9 = [731009,370786,197192,762638,991671,22111,574809,82679];
+	if [722794,147870,310888,266780,502034,321720](3) > 28703 & 976576 >= #[788906,701355,642041,303334,695576,661278] {
+		return 434773;
+	} else {
+		number HI_j4 = 162685;
+		array IL_h7 = [114297,842217,642223,514893,401497];
+		return 559456;
+	}
+	"
+	comentario		comentario		comentario	
+	comentario 	comentario		comentario 	comentario 
+	comentario 	comentario 	comentario		comentario 	comentario 
+	comentario 	comentario		comentario 
+	comentario		comentario		comentario 	comentario 	comentario		comentario		comentario 
+	comentario		comentario	
+	comentario 	comentario 
+	"
+	array OM_h7 = [644756,865213,190394,20098,625290,97961,175800,971101,737389];
+	return 454561;
+}
+
+function rpj_XLO_087(number AA_q2,number HS_i0,number XN_n1): array{
+	number BS_p5 = 176890 // 53272;
+	"
+	comentario		comentario		comentario 
+	comentario 	comentario 	comentario		comentario		comentario 
+	comentario 	comentario		comentario		comentario		comentario 
+	comentario		comentario 
+	"
+	array DJ_o6 = [990608,241670,682239,797872,596013];
+	return [943320,596959,866145,355955,252906,601018];
+}
+
+function main(array JX_n2,number YL_i9): number{
+	if 871909 >= [384683,878639,412288,524950,776824](1) | #[166565,779397,799541,810675,568923,823603,99151,548492,307350] > 203035 {
+		return 23900;
+	} else {
+		return 917989;
+	}
+	' comentario comentario	comentario	comentario	comentario 
+	array OD_v4 = [802214,425332,866731,402300,731941,240535,435580,80313,217468];
+	return 999114;
+}
+
