@@ -3,11 +3,13 @@
 #include "lib/lexer.h"
 #include "lib/parser.h"
 #include "lib/semantico.h"
+#include "lib/codegen.h"
 #include "lib/debug.h"
 #include <algorithm>
 #include <cstring>
 #include <filesystem>
 #include <fstream>
+#include <sstream>
 #include <future>
 #include <iostream>
 #include <iterator>
@@ -63,6 +65,10 @@ int main(int argc, char *argv[]) {
       return 0;
    }
 
+   std::string_view ruta(argv[1]);
+   auto pos = ruta.find('.');
+   ruta.remove_suffix(ruta.size() - pos);
+
    std::size_t tam_archivo = std::filesystem::file_size(argv[1]);
    bool debug = (argc >= 3 && std::strcmp(argv[2], "debug") == 0);
    bool debug_tiempo = (argc >= 4 && std::strcmp(argv[3], "-t") == 0);
@@ -74,6 +80,8 @@ int main(int argc, char *argv[]) {
       std::vector<lib::token_anotada> tokens;
       std::vector<lib::declaracion_funcion> arbol;
       std::map<std::string_view, lib::datos_funcion> funciones;
+      std::ostringstream codigo;
+      std::ofstream salida(std::string(ruta) + ".cpp");
       try{
          auto t_ini = std::chrono::high_resolution_clock::now( );
          lib::lee_archivo(entrada, archivo.data( ));
@@ -132,6 +140,9 @@ int main(int argc, char *argv[]) {
                std::clog << "Tiempo: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
             }
          }
+         lib::escribe_funcion(arbol.data(), funciones, codigo);
+         salida << codigo.str();
+         salida.close();
       }catch(const std::pair<lib::token_anotada, const char*>& e){
          reporta_error(std::cout, archivo.data( ), archivo.data( ) + archivo.size( ), e);
          std::exit(0);
@@ -141,6 +152,7 @@ int main(int argc, char *argv[]) {
       lib::concurrent_buffer<lib::token_anotada> tokens(tam_archivo + 1);
       lib::concurrent_buffer<lib::declaracion_funcion> arbol((tam_archivo / 8) + bool(tam_archivo % 8) + 1);
       std::map<std::string_view, lib::datos_funcion> funciones;
+      std::ofstream salida(std::string(ruta) + ".cpp");
 
       parallel_invoke<const std::pair<lib::token_anotada, const char*>>({
          [&] { lib::lee_archivo(entrada, archivo.output_iterator( )); },

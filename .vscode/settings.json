@@ -66,6 +66,6 @@
         "condition_variable": "cpp",
         "shared_mutex": "cpp",
         "future": "cpp",
-        "mutex": "cpp"
+        "mutex": "cpp",
     }
 }
