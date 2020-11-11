@@ -162,21 +162,21 @@ namespace lib {
         }
     }
 
-	void escribe_sentencia(const sentencia& nodo, funciones& f, ambitos& a, generador_codigo& gen);
-	void escribe_declaracion(const sentencia_declaracion& nodo, funciones& f, ambitos& a, generador_codigo& gen) {		
+	void escribe_sentencia(const sentencia& nodo, funciones& f, ambitos& a, generador_codigo& gen, bool es_main);
+	void escribe_declaracion(const sentencia_declaracion& nodo, funciones& f, ambitos& a, generador_codigo& gen, bool es_main) {		
 		datos_expresion d = escribe_expresion(*nodo.inicializador, f, a, gen);		
 		escribe_tipo(gen, nodo.tipo->tipo);
 		gen.flujo << std::string_view(*nodo.nombre) << " = " << d.nombre << ";\n";		
 		declara(a.back(), *nodo.nombre, nodo.tipo->tipo);
 	}
 
-	void escribe_if(const sentencia_if& nodo, funciones& f, ambitos& a, generador_codigo& gen) {
+	void escribe_if(const sentencia_if& nodo, funciones& f, ambitos& a, generador_codigo& gen, bool es_main) {
 		datos_expresion d = escribe_expresion(*nodo.condicion, f, a, gen);
 		gen.flujo << "if(" << d.nombre << "){\n";
 		ambito m_si;
         a.push_back(m_si);
 		for(auto& s : nodo.parte_si){
-            escribe_sentencia(*s, f, a, gen);
+            escribe_sentencia(*s, f, a, gen, es_main);
         }
 		gen.flujo << "}\n";
 		a.pop_back();		
@@ -185,25 +185,33 @@ namespace lib {
 			gen.flujo << "else{\n";
             a.push_back(m_no);
             for(auto& s : nodo.parte_no){
-                escribe_sentencia(*s, f, a, gen);
+                escribe_sentencia(*s, f, a, gen, es_main);
             }
             a.pop_back();
 			gen.flujo << "}\n";
         }
 	}
 
-	void escribe_return(const sentencia_return& nodo, funciones& f, ambitos& a, generador_codigo& gen) {
+	void escribe_return(const sentencia_return& nodo, funciones& f, ambitos& a, generador_codigo& gen, bool es_main) {
 		datos_expresion d = escribe_expresion(*nodo.ex, f, a, gen);
+		if(es_main){
+			if(d.tipo == NUMERO){
+				gen.flujo << "std::cout << " << d.nombre << " << \'\\n\';\n";				
+			}else{
+				gen.flujo << "imprime_arreglo(" << d.nombre << ");\n";
+			}
+			gen.flujo << "return 0;\n";
+		}
 		gen.flujo << "return " << d.nombre << ";\n";
 	}
 
-	void escribe_sentencia(const sentencia& nodo, funciones& f, ambitos& a, generador_codigo& gen) {
+	void escribe_sentencia(const sentencia& nodo, funciones& f, ambitos& a, generador_codigo& gen, bool es_main) {
 		if (auto p = dynamic_cast<const sentencia_declaracion*>(&nodo); p != nullptr) {
-            return escribe_declaracion(dynamic_cast<const sentencia_declaracion&>(nodo), f, a, gen);
+            return escribe_declaracion(dynamic_cast<const sentencia_declaracion&>(nodo), f, a, gen, es_main);
         } else if (auto p = dynamic_cast<const sentencia_if*>(&nodo); p != nullptr) {
-            return escribe_if(dynamic_cast<const sentencia_if&>(nodo), f, a, gen);
+            return escribe_if(dynamic_cast<const sentencia_if&>(nodo), f, a, gen, es_main);
         } else if (auto p = dynamic_cast<const sentencia_return*>(&nodo); p != nullptr) {
-            return escribe_return(dynamic_cast<const sentencia_return&>(nodo), f, a, gen);
+            return escribe_return(dynamic_cast<const sentencia_return&>(nodo), f, a, gen, es_main);
         }
 	}	
 
@@ -211,27 +219,49 @@ namespace lib {
 	void escribe_funcion(FI iter, funciones& f, std::ostringstream& os) {
 		generador_codigo gen = {os};
 		gen.flujo << "#include \"runtime.h\"\n\n";
+		ambito ap;
+		bool es_main = false;
 		while (iter->nombre != nullptr) {
-			gen.id_temporal = 0;
-			escribe_tipo(gen, iter->retorno->tipo);
-			gen.flujo << *iter->nombre << '(';
-			int tam = iter->parametros.size();
-			ambito ap;
-			for(int i = 0 ; i < tam ; ++i){
-				token tipo = iter->parametros[i].tipo->tipo;
-				std::string_view nombre = *iter->parametros[i].nombre;
-				ap.emplace(nombre, tipo);
-				escribe_tipo(gen, tipo);
-				gen.flujo << nombre << (i == tam - 1 ? ')' : ',');
+			std::string_view aux = *iter->nombre;
+			std::string nombre = {aux.begin(), aux.end()};
+			if(nombre == "main"){
+				es_main = true;
+				gen.flujo << "int " << nombre << "(int argc, char *argv[]){\n";
+				int tam = iter->parametros.size();				
+				for(int i = 0 ; i < tam ; ++i){					
+					token tipo = iter->parametros[i].tipo->tipo;
+					std::string_view nombre = *iter->parametros[i].nombre;
+					ap.emplace(nombre, tipo);
+					std::string arg = "argv[" + std::to_string(i + 1) + "]";
+					if(tipo == NUMERO){
+						escribe_tipo(gen, NUMERO);
+						gen.flujo << nombre << " = obten_numero(" << arg << ");\n";
+					}else{
+						escribe_tipo(gen, ARREGLO);
+						gen.flujo << nombre << " = obten_arreglo(" << arg << ");\n";
+					}
+				}
+			}else{
+				gen.id_temporal = 0;
+				escribe_tipo(gen, iter->retorno->tipo);
+				gen.flujo << *iter->nombre << '(';
+				int tam = iter->parametros.size();
+				for(int i = 0 ; i < tam ; ++i){
+					token tipo = iter->parametros[i].tipo->tipo;
+					std::string_view nombre = *iter->parametros[i].nombre;
+					ap.emplace(nombre, tipo);
+					escribe_tipo(gen, tipo);
+					gen.flujo << nombre << (i == tam - 1 ? ')' : ',');
+				}
+				if(tam == 0){
+					gen.flujo << ")";
+				}
+				gen.flujo << '{' << '\n';
 			}
-			if(tam == 0){
-				gen.flujo << ")";
-			}
-			gen.flujo << '{' << '\n';
 			ambitos a;
 			a.push_back(ap);
 			for(const auto& s : iter-> sentencias){
-				escribe_sentencia(*s, f, a, gen);
+				escribe_sentencia(*s, f, a, gen, es_main);
 			}
 			gen.flujo << "\n"  << '}' << "\n\n";
 			iter++;

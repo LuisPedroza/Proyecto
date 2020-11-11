@@ -15,7 +15,7 @@ namespace lib{
         const token_anotada* nombre;
         std::vector<parametro> parametros;
         const token_anotada* retorno;
-        std::vector<std::unique_ptr<sentencia>> sentencias;        
+        std::vector<std::unique_ptr<sentencia>> sentencias;
     };
 
     template<typename FI>
