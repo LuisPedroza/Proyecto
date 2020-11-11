@@ -10,6 +10,7 @@ namespace lib {
    enum token {
        FUNCION,
        MAIN,
+       RUNTIME,
        ARREGLO,
        NUMERO,
        PARENTESIS_IZQ,
@@ -51,6 +52,7 @@ namespace lib {
    std::vector<std::pair<std::string_view, token>> reservado = {
        {"function", FUNCION},
        {"main", MAIN},
+       {"runtime", RUNTIME},
        {"array", ARREGLO},
        {"number", NUMERO},
        {"(", PARENTESIS_IZQ},
