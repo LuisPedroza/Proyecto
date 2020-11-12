@@ -139,8 +139,18 @@ int main(int argc, char *argv[]) {
             }else{
                std::clog << "Tiempo: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
             }
+         }         
+         t_ini = std::chrono::high_resolution_clock::now( );
+         lib::escribe_funcion(arbol.data(), codigo);
+         t_fin = std::chrono::high_resolution_clock::now( );
+         if(debug){
+            std::cout << "Codigo generado." << '\n';
+            if(!debug_tiempo){
+
+            }else{
+               std::clog << "Tiempo: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
+            }
          }
-         lib::escribe_funcion(arbol.data(), funciones, codigo);
          salida << codigo.str();
          salida.close();
       }catch(const std::pair<lib::token_anotada, const char*>& e){
@@ -160,7 +170,7 @@ int main(int argc, char *argv[]) {
          [&] { lib::lexer(archivo.inspect_iterator( ), tokens.output_iterator( )); },
          [&] { lib::parser(tokens.inspect_iterator( ), arbol.output_iterator( )); },
          [&] { lib::analiza_funcion(arbol.inspect_iterator(), funciones); },
-         [&] { lib::escribe_funcion(arbol.inspect_iterator(), funciones, codigo); }
+         [&] { lib::escribe_funcion(arbol.inspect_iterator(), codigo); }
       }, [&](auto e) {
          reporta_error(std::cout, archivo.begin( ), archivo.end( ), e);
          std::exit(0);

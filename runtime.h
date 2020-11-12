@@ -51,7 +51,7 @@ namespace runtime {
       return std::strtold(arg, nullptr);
    }
 
-   void print_number(number n) {
+   void print(number n) {
       std::cout << n << "\n";
    }
 
@@ -69,13 +69,14 @@ namespace runtime {
       return a;
    }
 
-   void print_array(const array& a) {
+   void print(const array& a) {
       std::cout << "[ ";
       for(int i = 0 ; i < a.size( ); ++i){
          std::cout << a(i) << (i == a.size( ) - 1 ? "" : ", ");
       }
       std::cout << "]\n";
    }
+   
 }
 
 #endif
