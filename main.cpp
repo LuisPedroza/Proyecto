@@ -74,87 +74,71 @@ int main(int argc, char *argv[]) {
    bool debug_tiempo = (argc >= 4 && std::strcmp(argv[3], "-t") == 0);
    bool secuencial = (debug || argc >= 3 && std::strcmp(argv[2], "secuencial") == 0);
 
-   auto t0 = std::chrono::high_resolution_clock::now( );   
+   auto t0 = std::chrono::high_resolution_clock::now( );
    if (secuencial) {
       std::vector<char> archivo(tam_archivo + 1 + lib::read_size);
       std::vector<lib::token_anotada> tokens;
       std::vector<lib::declaracion_funcion> arbol;
       std::map<std::string_view, lib::datos_funcion> funciones;
       std::ostringstream codigo;
-      std::ofstream salida(std::string(ruta) + ".cpp");
+
       try{
          auto t_ini = std::chrono::high_resolution_clock::now( );
          lib::lee_archivo(entrada, archivo.data( ));
          auto t_fin = std::chrono::high_resolution_clock::now( );
          if (debug) {
-            std::cout << "Archivo leido." << '\n';
+            std::cerr << "Archivo leido: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
             if(!debug_tiempo){
                for(char c : archivo) {
                   if (c == '\0') {
                      break;
                   }
-                  std::cout << c;
+                  std::cerr << c;
                }
-            }else{
-               std::clog << "Tiempo: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
             }
          }
          t_ini = std::chrono::high_resolution_clock::now( );
          lib::lexer(archivo.data( ), std::back_inserter(tokens));
          t_fin = std::chrono::high_resolution_clock::now( );
          if (debug) {
-            std::cout << "Tokens leidos." << '\n';
+            std::cerr << "Tokens leidos: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
             if(!debug_tiempo){
                for(auto i : tokens){
                   while(i.ini != i.fin){
-                     std::cout << *i.ini++;
+                     std::cerr << *i.ini++;
                   }
-                  std::cout << '\t' << i.tipo << '\n';
+                  std::cerr << '\t' << i.tipo << '\n';
                }
-            }else{
-               std::clog << "Tiempo: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
             }
          }
          t_ini = std::chrono::high_resolution_clock::now( );
          lib::parser(tokens.data(), std::back_inserter(arbol));
          t_fin = std::chrono::high_resolution_clock::now( );
          if(debug){
-            std::cout << "Arbol generado." << '\n';
+            std::cerr << "Arbol generado: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
             if(!debug_tiempo){
                for(auto const& i : arbol){
-                  std::cout << i;
+                  std::cerr << i;
                }
-               std::cout << '\n';
-            }else{
-               std::clog << "Tiempo: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
+               std::cerr << '\n';
             }
          }
          t_ini = std::chrono::high_resolution_clock::now( );
          lib::analiza_funcion(arbol.data(), funciones);
          t_fin = std::chrono::high_resolution_clock::now( );
          if(debug){
-            std::cout << "Arbol analizado." << '\n';
-            if(!debug_tiempo){
-
-            }else{
-               std::clog << "Tiempo: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
-            }
-         }         
+            std::cerr << "Arbol analizado: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
+         }
          t_ini = std::chrono::high_resolution_clock::now( );
          lib::escribe_funcion(arbol.data(), codigo);
          t_fin = std::chrono::high_resolution_clock::now( );
          if(debug){
-            std::cout << "Codigo generado." << '\n';
-            if(!debug_tiempo){
-
-            }else{
-               std::clog << "Tiempo: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
-            }
+            std::cerr << "Codigo generado: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
          }
-         salida << codigo.str();
-         salida.close();
+
+         std::ofstream(std::string(ruta) + ".cpp") << std::move(codigo).str();
       }catch(const std::pair<lib::token_anotada, const char*>& e){
-         reporta_error(std::cout, archivo.data( ), archivo.data( ) + archivo.size( ), e);
+         reporta_error(std::cerr, archivo.data( ), archivo.data( ) + archivo.size( ), e);
          std::exit(0);
       }
    } else {
@@ -162,8 +146,7 @@ int main(int argc, char *argv[]) {
       lib::concurrent_buffer<lib::token_anotada> tokens(tam_archivo + 1);
       lib::concurrent_buffer<lib::declaracion_funcion> arbol((tam_archivo / 8) + bool(tam_archivo % 8) + 1);
       std::map<std::string_view, lib::datos_funcion> funciones;
-      std::ofstream salida(std::string(ruta) + ".cpp");
-      std::ostringstream codigo;      
+      std::ostringstream codigo;
 
       parallel_invoke<const std::pair<lib::token_anotada, const char*>>({
          [&] { lib::lee_archivo(entrada, archivo.output_iterator( )); },
@@ -172,11 +155,13 @@ int main(int argc, char *argv[]) {
          [&] { lib::analiza_funcion(arbol.inspect_iterator(), funciones); },
          [&] { lib::escribe_funcion(arbol.inspect_iterator(), codigo); }
       }, [&](auto e) {
-         reporta_error(std::cout, archivo.begin( ), archivo.end( ), e);
+         reporta_error(std::cerr, archivo.begin( ), archivo.end( ), e);
          std::exit(0);
       });
+
+      std::ofstream(std::string(ruta) + ".cpp") << std::move(codigo).str();
    }
 
    auto t1 = std::chrono::high_resolution_clock::now( );
-   std::clog << "Tiempo Total: " << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count( ) / 1000.0 << "\n";
+   std::cerr << "Tiempo Total: " << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count( ) / 1000.0 << "\n";
 }
