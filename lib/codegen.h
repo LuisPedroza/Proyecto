@@ -188,7 +188,7 @@ namespace lib {
 				for(int i = 0 ; i < tam ; ++i){
 					auto tipo = *iter->parametros[i].tipo;
 					auto id = *iter->parametros[i].nombre;
-					os << "runtime::" << std::string_view(tipo) << " " << std::string_view(id) << (i == tam - 1 ? "" : ",");
+					os << "const runtime::" << std::string_view(tipo) << "& " << std::string_view(id) << (i == tam - 1 ? "" : ",");
 				}
 				os << "){" << '\n';
 			}

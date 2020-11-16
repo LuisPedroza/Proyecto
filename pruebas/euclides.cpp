@@ -1,6 +1,6 @@
 #include "runtime.h"
 
-runtime::array xgcd(runtime::number a,runtime::number b){
+runtime::array xgcd(const runtime::number& a,const runtime::number& b){
 if((a==0)){
 return runtime::array({b,0,1});
 }
