@@ -16,12 +16,12 @@
 #include "semantico.h"
 
 namespace lib {
-	void escribe_expresion(const expresion& nodo,std::ostringstream& os);
-	void escribe_expresion_terminal(const expresion_terminal& nodo,std::ostringstream& os) {
+	void escribe_expresion(const expresion& nodo,std::ostream& os);
+	void escribe_expresion_terminal(const expresion_terminal& nodo,std::ostream& os) {
 		os << std::string_view(*nodo.t);
 	}
 
-	void escribe_expresion_op_prefijo(const expresion_op_prefijo& nodo,std::ostringstream& os) {		
+	void escribe_expresion_op_prefijo(const expresion_op_prefijo& nodo,std::ostream& os) {		
 		token tipo = nodo.operador->tipo;
 		if(tipo == TAMANYO_ARREGLO){
 			escribe_expresion(*nodo.sobre, os);
@@ -35,7 +35,7 @@ namespace lib {
 		}
 	}
 
-	void escribe_expresion_op_binario(const expresion_op_binario& nodo,std::ostringstream& os) {		
+	void escribe_expresion_op_binario(const expresion_op_binario& nodo,std::ostream& os) {		
 		token operador = nodo.operador->tipo;
 		if(operador == RESIDUO){
 			os << "std::fmod(";
@@ -64,7 +64,7 @@ namespace lib {
 		}  
 	}
 
-	void escribe_expresion_parentesis_posfijo(const expresion_parentesis_posfijo& nodo,std::ostringstream& os) {
+	void escribe_expresion_parentesis_posfijo(const expresion_parentesis_posfijo& nodo,std::ostream& os) {
 		escribe_expresion(*nodo.func, os);
 		os << "(";
 		int tam = nodo.parametros.size();
@@ -75,7 +75,7 @@ namespace lib {
 		os << ")";
 	}
 
-	void escribe_expresion_corchetes_posfijo(const expresion_corchetes_posfijo& nodo,std::ostringstream& os) {
+	void escribe_expresion_corchetes_posfijo(const expresion_corchetes_posfijo& nodo,std::ostream& os) {
 		escribe_expresion(*nodo.ex, os);
 		if(nodo.der != nullptr){
 			os << ".slice(";
@@ -90,7 +90,7 @@ namespace lib {
 		}
 	}
 
-	void escribe_expresion_arreglo(const expresion_arreglo& nodo,std::ostringstream& os) {
+	void escribe_expresion_arreglo(const expresion_arreglo& nodo,std::ostream& os) {
 		os << "runtime::array({";
 		int tam = nodo.elementos.size();
 		for(int i = 0 ; i < tam ; ++i){
@@ -100,7 +100,7 @@ namespace lib {
 		os << "})";
 	}
 
-	void escribe_expresion(const expresion& nodo,std::ostringstream& os) {
+	void escribe_expresion(const expresion& nodo,std::ostream& os) {
         if (auto p = dynamic_cast<const expresion_terminal*>(&nodo); p != nullptr) {
             return escribe_expresion_terminal(*p, os);
         } else if (auto p = dynamic_cast<const expresion_op_prefijo*>(&nodo); p != nullptr) {
@@ -116,14 +116,14 @@ namespace lib {
         }
     }
 
-	void escribe_sentencia(const sentencia& nodo,std::ostringstream& os, bool es_main);
-	void escribe_declaracion(const sentencia_declaracion& nodo,std::ostringstream& os, bool es_main) {		
+	void escribe_sentencia(const sentencia& nodo,std::ostream& os, bool es_main);
+	void escribe_declaracion(const sentencia_declaracion& nodo,std::ostream& os, bool es_main) {		
 		os << "runtime::" << std::string_view(*nodo.tipo) << " " << std::string_view(*nodo.nombre) << " = ";
 		escribe_expresion(*nodo.inicializador, os);
 		os << ";\n";
 	}
 
-	void escribe_if(const sentencia_if& nodo,std::ostringstream& os, bool es_main) {
+	void escribe_if(const sentencia_if& nodo,std::ostream& os, bool es_main) {
 		os << "if(";
 		escribe_expresion(*nodo.condicion, os);
 		os << "){\n";
@@ -140,7 +140,7 @@ namespace lib {
 		}
 	}
 
-	void escribe_return(const sentencia_return& nodo,std::ostringstream& os, bool es_main) {
+	void escribe_return(const sentencia_return& nodo,std::ostream& os, bool es_main) {
 		if(es_main){
 			os << "runtime::print(";
 			escribe_expresion(*nodo.ex, os);
@@ -154,7 +154,7 @@ namespace lib {
 
 	}
 
-	void escribe_sentencia(const sentencia& nodo,std::ostringstream& os, bool es_main) {
+	void escribe_sentencia(const sentencia& nodo,std::ostream& os, bool es_main) {
 		if (auto p = dynamic_cast<const sentencia_declaracion*>(&nodo); p != nullptr) {
             return escribe_declaracion(dynamic_cast<const sentencia_declaracion&>(nodo), os, es_main);
         } else if (auto p = dynamic_cast<const sentencia_if*>(&nodo); p != nullptr) {
@@ -165,7 +165,7 @@ namespace lib {
 	}	
 
 	template <typename FI>
-	void escribe_funcion(FI iter, std::ostringstream& os) {		
+	void escribe_funcion(FI iter, std::ostream& os) {		
 		os << "#include \"runtime.h\"\n\n";		
 		bool es_main = false;
 		while (iter->nombre != nullptr) {

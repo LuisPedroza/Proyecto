@@ -1,0 +1,23 @@
+function siguiente_fib(number n, number cont, array anteriores) : array{
+    if n = cont{
+        return [anteriores(0) + anteriores(1)];
+    }else{
+        number siguiente = anteriores(0) + anteriores(1);
+        array aux = [anteriores(1), siguiente];
+        return [siguiente] * siguiente_fib(n, cont + 1, aux);
+    }
+}
+
+function fibonacci(number n) : array{
+    if n = 0{
+        return [0];
+    }else if n = 1{
+        return [0, 1];
+    }else{
+        return [0, 1] * siguiente_fib(n, 2, [0, 1]);
+    }
+}
+
+function main(number n) : array{
+    return fibonacci(n);
+}

@@ -95,7 +95,7 @@ namespace lib {
             auto ini_p = llamar.parametros.begin();
             for(const auto& actual : nodo.parametros){
                 datos_expresion t = analiza_expresion(*actual, f, a, retorno);
-                asercion(*ini_p++ == t.tipo, std::make_pair(actual->get_token(), "Tipo de argumento incorrecto."));
+                asercion(*ini_p++ == t.tipo, std::make_pair(*actual->get_token(), "Tipo de argumento incorrecto."));
             }
             return datos_expresion{llamar.retorno};
         } else {
@@ -122,7 +122,7 @@ namespace lib {
     datos_expresion analiza_expresion_arreglo(const expresion_arreglo& nodo, const funciones& f, ambitos& a, const token& retorno) {
         for (const auto& actual : nodo.elementos) {
             datos_expresion t = analiza_expresion(*actual, f, a, retorno);
-            asercion(t.tipo == NUMERO, std::make_pair(actual->get_token(), "No es un numero."));
+            asercion(t.tipo == NUMERO, std::make_pair(*actual->get_token(), "No es un numero."));
         }
         return datos_expresion{ARREGLO};
     }

@@ -1,0 +1,24 @@
+function max(number a, number b) : number {
+    if a >= b{
+        return a;
+    }else{
+        return b;
+    }
+}
+
+function mochila(number n, number w, array peso, array valor) : number {
+    if n = -1 | w = 0{
+        return 0;
+    }else if peso(n) > w {
+        return mochila(n - 1, w, peso, valor);
+    }else{
+        number aux1 = mochila(n - 1, w, peso, valor);
+        number aux2 = valor(n) + mochila(n - 1, w - peso(n), peso, valor);
+        return max(aux1, aux2);
+    }
+}
+
+function main(array peso, array valor, number w) : number {
+    return mochila(#peso - 1, w, peso, valor);
+}
+

@@ -141,6 +141,8 @@ int main(int argc, char *argv[]) {
          reporta_error(std::cerr, archivo.data( ), archivo.data( ) + archivo.size( ), e);
          std::exit(0);
       }
+      // auto t1 = std::chrono::high_resolution_clock::now( );
+      // std::cerr << "Tiempo Total: " << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count( ) / 1000.0 << "\n";
    } else {
       lib::concurrent_buffer<char> archivo(tam_archivo + 1 + lib::read_size);
       lib::concurrent_buffer<lib::token_anotada> tokens(tam_archivo + 1);
@@ -160,6 +162,8 @@ int main(int argc, char *argv[]) {
       });
 
       std::ofstream(std::string(ruta) + ".cpp") << std::move(codigo).str();
+      // auto t1 = std::chrono::high_resolution_clock::now( );
+      // std::cerr << "Tiempo Total: " << std::chrono::duration_cast<std::chrono::milliseconds>(t1 - t0).count( ) / 1000.0 << "\n";
    }
 
    auto t1 = std::chrono::high_resolution_clock::now( );

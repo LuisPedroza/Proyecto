@@ -1,0 +1,17 @@
+function revisa_divisores(number n, number d) : number{
+    if d = 1{
+        return 1;
+    }
+    if n % d = 0{
+        return 0;
+    }
+    return revisa_divisores(n, d - 1);
+}
+
+function es_primo(number n) : number{
+    return revisa_divisores(n, n - 1);
+}
+
+function main(number n) : number{
+    return es_primo(n);
+}
