@@ -1,0 +1,198 @@
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>echo "Secuencial .5 MB" 
+"Secuencial .5 MB"
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>FOR /L %A IN (1 1 5) DO (main.exe test\test_5.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_5.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_5.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_5.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_5.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_5.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>echo "Concurrente .5 MB" 
+"Concurrente .5 MB"
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>FOR /L %A IN (1 1 5) DO (main.exe test\test_5.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_5.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_5.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_5.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_5.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_5.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>echo "Secuencial 1 MB" 
+"Secuencial 1 MB"
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>FOR /L %A IN (1 1 5) DO (main.exe test\test_1.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_1.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_1.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_1.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_1.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_1.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>echo "Concurrente 1 MB" 
+"Concurrente 1 MB"
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>FOR /L %A IN (1 1 5) DO (main.exe test\test_1.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_1.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_1.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_1.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_1.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_1.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>echo "Secuencial 2 MB" 
+"Secuencial 2 MB"
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>FOR /L %A IN (1 1 5) DO (main.exe test\test_2.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_2.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_2.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_2.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_2.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_2.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>echo "Concurrente 2 MB" 
+"Concurrente 2 MB"
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>FOR /L %A IN (1 1 5) DO (main.exe test\test_2.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_2.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_2.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_2.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_2.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_2.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>echo "Secuencial 4 MB" 
+"Secuencial 4 MB"
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>FOR /L %A IN (1 1 5) DO (main.exe test\test_4.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_4.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_4.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_4.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_4.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_4.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>echo "Concurrente 4 MB" 
+"Concurrente 4 MB"
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>FOR /L %A IN (1 1 5) DO (main.exe test\test_4.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_4.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_4.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_4.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_4.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_4.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>echo "Secuencial 8 MB" 
+"Secuencial 8 MB"
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>FOR /L %A IN (1 1 5) DO (main.exe test\test_8.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_8.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_8.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_8.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_8.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_8.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>echo "Concurrente 8 MB" 
+"Concurrente 8 MB"
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>FOR /L %A IN (1 1 5) DO (main.exe test\test_8.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_8.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_8.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_8.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_8.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_8.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>echo "Secuencial 16 MB" 
+"Secuencial 16 MB"
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>FOR /L %A IN (1 1 5) DO (main.exe test\test_16.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_16.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_16.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_16.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_16.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_16.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>echo "Concurrente 16 MB" 
+"Concurrente 16 MB"
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>FOR /L %A IN (1 1 5) DO (main.exe test\test_16.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_16.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_16.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_16.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_16.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_16.txt ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>echo "Secuencial 32 MB" 
+"Secuencial 32 MB"
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>FOR /L %A IN (1 1 5) DO (main.exe test\test_32.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_32.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_32.txt secuencial ) 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_32.txt secuencial ) 
+¨Desea terminar el trabajo por lotes (S/N)? 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_32.txt secuencial ) 
+¨Desea terminar el trabajo por lotes (S/N)? 
+
+C:\Users\Luis Antonio\Documents\GitHub\Proyecto>(main.exe test\test_32.txt secuencial ) 
+¨Desea terminar el trabajo por lotes (S/N)? 

@@ -135,7 +135,7 @@ int main(int argc, char *argv[]) {
          if(debug){
             std::cerr << "Codigo generado: " << std::chrono::duration_cast<std::chrono::milliseconds>(t_fin - t_ini).count( ) / 1000.0 << "\n";
          }
-
+         
          std::ofstream(std::string(ruta) + ".cpp") << std::move(codigo).str();
       }catch(const std::pair<lib::token_anotada, const char*>& e){
          reporta_error(std::cerr, archivo.data( ), archivo.data( ) + archivo.size( ), e);
