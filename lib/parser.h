@@ -56,7 +56,7 @@ namespace lib{
         while(iter->tipo != FIN_ARCHIVO){
             *salida++ = parsea_funcion(iter);
         }
-        *salida++ = declaracion_funcion{ };           // el equivalente de FIN_ARCHIVO pero para declaraciones; ser� �til tenerlo en el sem�ntico
+        *salida++ = declaracion_funcion{ };           // el equivalente de FIN_ARCHIVO pero para declaraciones; será útil tenerlo en el semántico
     }
 };
 
